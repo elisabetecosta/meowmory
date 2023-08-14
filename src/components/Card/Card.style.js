@@ -5,32 +5,37 @@ import { COLORS, FONT, SIZES } from "../../constants"
 const styles = StyleSheet.create({
 
   card: {
-    position: "relative",
-    height: 165,
-    width: 115,
-    borderRadius: 10
+    height: 117,
+    width: 83,
+    borderRadius: 10,
+    margin: 5
   },
 
-  image: {
-    height: "inherit",
-    width: "inherit"
+  cardFace: {
+    width: '100%',
+    height: '100%',
+    overflow: 'hidden',
+    backfaceVisibility: 'hidden',
+    transitionProperty: 'transform',
+    transitionDuration: '500ms',
+    transitionTimingFunction: 'ease-in-out',
+  },
+
+  cardImage: {
+    height: 117,
+    width: 83,
+    borderRadius: 10,
   },
 
   cardBack: {
-    border: 2,
-    borderColor: COLORS.light,
+    borderWidth: 2,
+    borderColor: COLORS.primary,
   },
 
-  cardBackImg: {
-    height: 165,
-    width: 115,
+  visible: {
+    transform: [{ rotateY: '180deg' }],
+    boxShadow: '0px 5px 15px rgba(0, 0, 0, 0.35)',
   },
-
-  cardFrontImg: {
-    height: 165,
-    width: 115,
-  },
-
 })
 
 export default styles

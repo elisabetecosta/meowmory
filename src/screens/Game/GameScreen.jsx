@@ -11,7 +11,9 @@ const GameScreen = () => {
     return (
         <View style={styles.container}>
             <Card 
-                src={card01}
+                imageSrc={card01}
+                isFrontVisible={true}
+                onCardPress={() => console.log("clicked")}
             />
         </View>
     )
