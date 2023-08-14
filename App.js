@@ -1,20 +1,48 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React from "react"
 
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
+// Needed for custom fonts
+import { useCallback } from "react"
+import { useFonts } from "expo-font"
+import * as SplashScreen from "expo-splash-screen"
+
+import StackComponent from "./src/routes/stack"
+
+import { SafeAreaView, StyleSheet } from "react-native"
+import { COLORS, FONT, SIZES } from "./src/constants"
+
+
+const App = () => {
+
+    // FONTS
+    const [fontsLoaded, fontError] = useFonts({
+        PoppinsRegular: require('./assets/fonts/Poppins-Regular.ttf'),
+        PoppinsBold: require('./assets/fonts/Poppins-Bold.ttf'),
+        RubikIso: require('./assets/fonts/RubikIso-Regular.ttf'),
+    })
+
+    const onLayoutRootView = useCallback(async () => {
+        if (fontsLoaded || fontError) await SplashScreen.hideAsync()
+    }, [fontsLoaded, fontError])
+
+    if (!fontsLoaded && !fontError) return null
+
+    return (
+
+        <SafeAreaView style={styles.container}>
+            <StackComponent onLayout={onLayoutRootView} />
+        </SafeAreaView>
+        // <View style={{ flex: 1, padding: SIZES.medium }}>
+        //     <WelcomeScreen />
+        // </View>
+    )
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+    container: {
+        flex: 1,
+        backgroundColor: COLORS.primary,
+        width: "100%",
+    },
+})
+
+export default App
