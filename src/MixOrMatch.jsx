@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import { initializeGameState } from "./utils/InitialGameState"
-import { AudioController } from './AudioController'; // Make sure to provide the correct path
+import { AudioController } from './utils/AudioController'
 import Card from './components/Card/Card';
-import GameScreen from './screens/Game/GameScreen';
 
 class MixOrMatch extends Component {
 
@@ -10,20 +9,22 @@ class MixOrMatch extends Component {
 
         super(props);
 
+        const { level } = props;
+
         this.state = {
 
             ...initializeGameState(),
 
             cardsImagesArray: [
-                { name: 'card-01', path: 'Assets/Images/card-01.png' },
-                { name: 'card-02', path: 'Assets/Images/card-02.png' },
-                { name: 'card-03', path: 'Assets/Images/card-03.png' },
-                { name: 'card-04', path: 'Assets/Images/card-04.png' },
-                { name: 'card-05', path: 'Assets/Images/card-05.png' },
-                { name: 'card-06', path: 'Assets/Images/card-06.png' },
+                { name: 'card-01', path: '../assets/images/card-01.png' },
+                { name: 'card-02', path: '../assets/images/card-02.png' },
+                { name: 'card-03', path: '../assets/images/card-03.png' },
+                { name: 'card-04', path: '../assets/images/card-04.png' },
+                { name: 'card-05', path: '../assets/images/card-05.png' },
+                { name: 'card-06', path: '../assets/images/card-06.png' },
             ],
-            level: props.level,
-            totalTime: this.setTimer(),
+
+            level: level,
         };
 
         this.audioController = new AudioController();
@@ -31,18 +32,19 @@ class MixOrMatch extends Component {
 
 
 
-    setTimer() {
-        if (this.state.level === 'easy') return 100;
-        if (this.state.level === 'medium') return 60;
-        if (this.state.level === 'hard') return 30;
+    setTimer = () => {
+        if (level === 'easy') return 100;
+        if (level === 'medium') return 60;
+        if (level === 'hard') return 30;
     }
 
 
 
-    startGame() {
+    startGame = () => {
 
         this.setState({
             ...initializeGameState(),
+            totalTime: this.setTimer(),
             timeRemaining: this.setTimer(),
         })
         this.clearCards();
@@ -63,7 +65,7 @@ class MixOrMatch extends Component {
 
 
 
-    createCards() {
+    createCards = () => {
         // Create an array of Card components using the cardsImagesArray
         const cardsArray = this.state.cardsImagesArray.map((cardInfo, index) => (
             <Card
@@ -80,7 +82,7 @@ class MixOrMatch extends Component {
 
 
 
-    clickCards() {
+    clickCards = () => {
 
         // Map over the existing cardsArray in the state
         const updatedCardsArray = this.state.cardsArray.map((card, index) => (
@@ -102,7 +104,7 @@ class MixOrMatch extends Component {
 
 
 
-    shuffleCards() {
+    shuffleCards = () => {
 
         // Create a copy of the cardsImagesArray to shuffle
         const shuffledImagesArray = [...this.state.cardsImagesArray];
@@ -116,7 +118,7 @@ class MixOrMatch extends Component {
 
 
 
-    startCountdown() {
+    startCountdown = () => {
         // Start the countdown interval
         const countdown = setInterval(() => {
             this.setState(prevState => ({
@@ -135,7 +137,7 @@ class MixOrMatch extends Component {
 
 
 
-    flipCard(cardId) {
+    flipCard = (cardId) => {
 
         // Check if the card can be flipped based on game conditions
         if (this.canFlipCard(cardId)) {
@@ -190,7 +192,7 @@ class MixOrMatch extends Component {
 
 
 
-    canFlipCard(cardId) {
+    canFlipCard = (cardId) => {
 
         // Check if the game is not busy, card is not matched, and fewer than 2 cards are selected
         return (
@@ -202,7 +204,7 @@ class MixOrMatch extends Component {
 
 
 
-    checkForCardMatch() {
+    checkForCardMatch = () => {
 
         // Get the IDs and names of the selected cards
         const [firstCardId, secondCardId] = this.state.selectedCardsIds;
@@ -242,13 +244,13 @@ class MixOrMatch extends Component {
 
 
 
-    clearCards() {
+    clearCards = () => {
         this.setState({ cardsArray: [] });
     }
 
 
 
-    gameOver() {
+    gameOver = () => {
         clearInterval(this.countdown); // Clear the countdown interval
         this.audioController.gameOver(); // Play game over sound
         this.setState({ gameOverVisible: true }); // Update state to show game over screen
@@ -256,7 +258,7 @@ class MixOrMatch extends Component {
 
 
 
-    victory() {
+    victory = () => {
         clearInterval(this.countdown); // Clear the countdown interval
         this.audioController.victory(); // Play victory sound
         this.setState({ victoryVisible: true }); // Update state to show victory screen
@@ -265,9 +267,7 @@ class MixOrMatch extends Component {
 
 
     render() {
-        return (
-            <GameScreen state={this.state} level={this.state.level} />
-        );
+        return <></>
     }
 }
 

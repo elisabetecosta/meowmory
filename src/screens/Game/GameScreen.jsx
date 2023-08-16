@@ -2,37 +2,41 @@ import React, { useEffect } from "react"
 import { View, Text } from "react-native"
 import { initializeGameState } from "../../utils/InitialGameState"
 
+import GameOverScreen from "../GameOver/GameOverScreen"
+import VictoryScreen from "../Victory/VictoryScreen"
+
 import styles from "./GameScreen.style"
 import Card from "../../components/Card/Card"
 
 import card01 from "../../../assets/images/card-01.png"
 
-const GameScreen = ({ state }) => {
+const GameScreen = ({ route }) => {
 
-    // Define the effect to be run when the component is mounted
+    // Extract the logic component from the route
+    const { logic } = route.params
+
+    // Initialize state using the logic component
     useEffect(() => {
-
-        // Initialize state using the utility function
-        setState(initializeGameState())
-    }, [state])
+        logic.setState(initializeGameState());
+    }, [logic])
 
     return (
         <View style={styles.container}>
 
             {/* Render game info */}
-            <Text id="time-remaining">{state.timeRemaining}</Text>
-            <Text id="flips">{state.totalClicks}</Text>
+            <Text id="time-remaining">{logic.state.timeRemaining}</Text>
+            <Text id="flips">{logic.state.totalClicks}</Text>
 
             {/* Render game board with all the cards */}
             <View style={styles.cardContainer}>
-                {state.cardsArray.map(card => card)}
+                {logic.state.cardsArray.map(card => card)}
             </View>
 
             {/* Render game over screen */}
-            {state.gameOverVisible && <GameOverScreen />}
+            {logic.state.gameOverVisible && <GameOverScreen />}
 
             {/* Render victory screen */}
-            {state.victoryVisible && <VictoryScreen />}
+            {logic.state.victoryVisible && <VictoryScreen />}
 
 
             {/* <Card 

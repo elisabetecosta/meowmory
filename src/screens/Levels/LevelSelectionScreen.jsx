@@ -1,6 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import MixOrMatch from '../../MixOrMatch';
 import Button from '../../components/Button/Button';
 
 import styles from "./LevelSelectionScreen.style"
@@ -10,7 +11,11 @@ const LevelSelectionScreen = () => {
     const navigation = useNavigation();
 
     const handleLevelSelection = (level) => {
-        navigation.navigate("Game", { level });
+
+        // Pass the selected level to the MixOrMatch logic component
+        const gameLogic = new MixOrMatch(level);
+
+        navigation.navigate("Game", { logic: gameLogic });
     };
 
     return (
