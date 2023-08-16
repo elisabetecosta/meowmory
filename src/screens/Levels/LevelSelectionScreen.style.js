@@ -6,12 +6,14 @@ const styles = StyleSheet.create({
   container: {
     width: "100%",
     flex: 1,
-    backgroundColor: COLORS.secondary,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: COLORS.primary,
   },
 
-  cardContainer: {
-    backgroundColor: "#fff",
-  }
+  easy: {
+    backgroundColor: COLORS.easy,
+  },
 })
 
 export default styles

@@ -9,7 +9,10 @@ import { COLORS, icons } from "../constants"
 import ScreenHeaderBtn from "../components/Header/ScreenHeaderBtn"
 import WelcomeScreen from "../screens/Home/WelcomeScreen"
 import RulesScreen from "../screens/Rules/RulesScreen"
+import LevelSelectionScreen from "../screens/Levels/LevelSelectionScreen"
 import GameScreen from "../screens/Game/GameScreen"
+import VictoryScreen from "../screens/Victory/VictoryScreen"
+import GameOverScreen from "../screens/GameOver/GameOverScreen"
 
 const Stack = createNativeStackNavigator()
 
@@ -45,8 +48,39 @@ const StackComponent = () => {
                 />
 
                 <Stack.Screen
+                    name="Levels"
+                    component={LevelSelectionScreen}
+                    options={{
+                        headerStyle: { backgroundColor: COLORS.primary },
+                        headerShadowVisible: false,
+                        headerTitle: ""
+                    }}
+                />
+
+                <Stack.Screen
                     name="Game"
                     component={GameScreen}
+                    options={({ route }) => ({
+                        headerStyle: { backgroundColor: COLORS.primary },
+                        headerShadowVisible: false,
+                        headerTitle: "",
+                        params: { level: route.params?.level }
+                    })}
+                />
+
+                <Stack.Screen
+                    name="Victory"
+                    component={VictoryScreen}
+                    options={{
+                        headerStyle: { backgroundColor: COLORS.primary },
+                        headerShadowVisible: false,
+                        headerTitle: ""
+                    }}
+                />
+
+                <Stack.Screen
+                    name="GameOver"
+                    component={GameOverScreen}
                     options={{
                         headerStyle: { backgroundColor: COLORS.primary },
                         headerShadowVisible: false,

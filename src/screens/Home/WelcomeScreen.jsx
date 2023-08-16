@@ -19,7 +19,7 @@ const WelcomeScreen = () => {
       <View style={styles.wrapper}>
         <Button
           text="Start"
-          handlePress={() => navigation.navigate("Game")}
+          handlePress={() => navigation.navigate("Levels")}
         />
         <Button
           text="How To Play"
