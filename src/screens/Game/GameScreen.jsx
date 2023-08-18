@@ -1,6 +1,6 @@
 import React, { useEffect } from "react"
 import { View, Text } from "react-native"
-import { initializeGameState } from "../../utils/InitialGameState"
+import { useGameContext } from '../../context/GameContext'
 
 import GameOverScreen from "../GameOver/GameOverScreen"
 import VictoryScreen from "../Victory/VictoryScreen"
@@ -10,33 +10,31 @@ import Card from "../../components/Card/Card"
 
 import card01 from "../../../assets/images/card-01.png"
 
-const GameScreen = ({ route }) => {
+const GameScreen = () => {
 
-    // Extract the logic component from the route
-    const { logic } = route.params
+    const { gameState, startGame } = useGameContext();
 
-    // Initialize state using the logic component
-    useEffect(() => {
-        logic.setState(initializeGameState());
-    }, [logic])
+    // useEffect(() => {
+    //     startGame();
+    // }, []);
 
     return (
         <View style={styles.container}>
 
             {/* Render game info */}
-            <Text id="time-remaining">{logic.state.timeRemaining}</Text>
-            <Text id="flips">{logic.state.totalClicks}</Text>
+            <Text>{gameState.timeRemaining}</Text>
+            <Text>{gameState.totalClicks}</Text>
 
             {/* Render game board with all the cards */}
             <View style={styles.cardContainer}>
-                {logic.state.cardsArray.map(card => card)}
+                {gameState.cardsArray.map(card => card)}
             </View>
 
             {/* Render game over screen */}
-            {logic.state.gameOverVisible && <GameOverScreen />}
+            {gameState.gameOverVisible && <GameOverScreen />}
 
             {/* Render victory screen */}
-            {logic.state.victoryVisible && <VictoryScreen />}
+            {gameState.victoryVisible && <VictoryScreen />}
 
 
             {/* <Card 

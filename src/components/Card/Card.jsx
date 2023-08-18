@@ -4,20 +4,19 @@ import { View, Image } from "react-native"
 import cardBack from "../../../assets/images/card-back.png"
 import styles from "./Card.style"
 
-const Card = ({ dataId, imagePath, isFrontVisible, isMatched }) => {
+const Card = ({ dataId, imagePath, isFrontVisible, isMatched, onCardPress }) => {
 
     return (
 
         <View
             style={[
                 styles.card,
-                isMatched,
-                isFrontVisible && styles.visible,
+                isFrontVisible || isMatched ? styles.visible : null
             ]}
-            // onTouchEnd={onCardPress}
+            onTouchEnd={() => onCardPress(dataId)}
         >
             <View style={styles.cardFace}>
-                {isFrontVisible ? (
+                {isFrontVisible || isMatched ? (
                     <Image source={imagePath} style={styles.cardImage} />
                 ) : (
                     <Image source={cardBack} style={[styles.cardImage, styles.cardBack]} />

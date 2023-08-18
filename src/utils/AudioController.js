@@ -1,4 +1,4 @@
-import Sound from "react-native-sound"
+// import Sound from "react-native-sound"
 
 class AudioController {
     
@@ -6,7 +6,7 @@ class AudioController {
         
         Sound.setCategory('Playback'); // Set audio category for background playback
 
-        this.bgMusic = new Sound('music.mp3', Sound.MAIN_BUNDLE, (error) => {
+        this.bgMusic = new Sound('../../assets/audio/music.mp3', Sound.MAIN_BUNDLE, (error) => {
             if (error) {
                 console.log('Error loading background music:', error);
             }
@@ -15,10 +15,10 @@ class AudioController {
         this.bgMusic.setVolume(0.5);
         this.bgMusic.setNumberOfLoops(-1); // Infinite loop
 
-        this.flipSound = new Sound('flip.wav', Sound.MAIN_BUNDLE);
-        this.matchSound = new Sound('match.wav', Sound.MAIN_BUNDLE);
-        this.victorySound = new Sound('victory.wav', Sound.MAIN_BUNDLE);
-        this.gameOverSound = new Sound('gameover.wav', Sound.MAIN_BUNDLE);
+        this.flipSound = new Sound('../../assets/audio/flip.wav', Sound.MAIN_BUNDLE);
+        this.matchSound = new Sound('../../assets/audio/match.wav', Sound.MAIN_BUNDLE);
+        this.victorySound = new Sound('../../assets/audio/victory.wav', Sound.MAIN_BUNDLE);
+        this.gameOverSound = new Sound('../../assets/audio/gameover.wav', Sound.MAIN_BUNDLE);
     }
 
     // Start playing background music

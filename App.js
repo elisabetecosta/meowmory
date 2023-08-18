@@ -1,13 +1,17 @@
 import React from "react"
+import { SafeAreaView, StyleSheet } from "react-native"
 
 // Needed for custom fonts
 import { useCallback } from "react"
 import { useFonts } from "expo-font"
 import * as SplashScreen from "expo-splash-screen"
 
+//
 import StackComponent from "./src/routes/stack"
 
-import { SafeAreaView, StyleSheet } from "react-native"
+//
+import { GameProvider } from "./src/context/GameContext"
+
 import { COLORS, FONT, SIZES } from "./src/constants"
 
 
@@ -29,11 +33,10 @@ const App = () => {
     return (
 
         <SafeAreaView style={styles.container}>
-            <StackComponent onLayout={onLayoutRootView} />
+            <GameProvider>
+                <StackComponent onLayout={onLayoutRootView} />
+            </GameProvider>
         </SafeAreaView>
-        // <View style={{ flex: 1, padding: SIZES.medium }}>
-        //     <WelcomeScreen />
-        // </View>
     )
 }
 

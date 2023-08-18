@@ -1,97 +1,104 @@
-import React, { Component } from 'react';
-import { initializeGameState } from "./utils/InitialGameState"
-import { AudioController } from './utils/AudioController'
-import Card from './components/Card/Card';
+import React, { useState, useEffect } from 'react';
+import Card from '../components/Card/Card';
 
-class MixOrMatch extends Component {
+const initializeGameState = () => {
 
-    constructor(props) {
+    return {
+        timeRemaining: 0,
+        totalClicks: 0,
+        cardsImagesArray: [
+            { name: 'card-01', path: '../../assets/images/card-01.png' },
+            { name: 'card-02', path: '../../assets/images/card-02.png' },
+            { name: 'card-03', path: '../../assets/images/card-03.png' },
+            { name: 'card-04', path: '../../assets/images/card-04.png' },
+            { name: 'card-05', path: '../../assets/images/card-05.png' },
+            { name: 'card-06', path: '../../assets/images/card-06.png' },
+        ],
+        cardsArray: [],
+        selectedCards: [],
+        selectedCardsIds: [],
+        matchedCards: [],
+        busy: false,
+        gameOverVisible: false,
+        victoryVisible: false,
+    };
+};
 
-        super(props);
+const GameLogic = () => {
+    const [gameState, setGameState] = useState(initializeGameState());
+    const [countdown, setCountdown] = useState(null);
 
-        const { level } = props;
+    useEffect(() => {
+        // startGame();
+    }, []);
 
-        this.state = {
 
-            ...initializeGameState(),
+    // FUNCTIONS
 
-            cardsImagesArray: [
-                { name: 'card-01', path: '../assets/images/card-01.png' },
-                { name: 'card-02', path: '../assets/images/card-02.png' },
-                { name: 'card-03', path: '../assets/images/card-03.png' },
-                { name: 'card-04', path: '../assets/images/card-04.png' },
-                { name: 'card-05', path: '../assets/images/card-05.png' },
-                { name: 'card-06', path: '../assets/images/card-06.png' },
-            ],
-
-            level: level,
-        };
-
-        this.audioController = new AudioController();
+    const setTimer = (level) => {
+        if (level === 'easy') setGameState(prevState => ({ ...prevState, timeRemaining: 100 }));
+        if (level === 'medium') setGameState(prevState => ({ ...prevState, timeRemaining: 60 }));
+        if (level === 'hard') setGameState(prevState => ({ ...prevState, timeRemaining: 30 }));
     }
 
 
 
-    setTimer = () => {
-        if (level === 'easy') return 100;
-        if (level === 'medium') return 60;
-        if (level === 'hard') return 30;
-    }
+    const startGame = () => {
 
+        // Initialize the game state
+        const newGameState = initializeGameState();
 
+        // Update game state to start the game
+        setGameState(newGameState);
 
-    startGame = () => {
+        // Create and shuffle cards
+        createCards();
+        shuffleCards();
+        // audioController.startMusic();
 
-        this.setState({
-            ...initializeGameState(),
-            totalTime: this.setTimer(),
-            timeRemaining: this.setTimer(),
-        })
-        this.clearCards();
-        this.createCards();
-        this.shuffleCards();
-        this.audioController.startMusic();
-
+        // After a brief delay, start the countdown and set busy to false
         setTimeout(() => {
-            this.countdown = this.startCountdown();
-            this.setState({ busy: false });
+            const countdownInterval = startCountdown();
+            setGameState(prevState => ({ ...prevState, busy: false }));
+            setCountdown(countdownInterval);
         }, 500);
 
-        this.setState({
-            timer: this.state.timeRemaining,
-            flips: this.state.totalClicks,
-        });
+        // Set the initial timer and flips in the state
+        setGameState(prevState => ({
+            ...prevState,
+            timer: prevState.timeRemaining,
+            flips: prevState.totalClicks,
+        }));
     }
 
+    const createCards = () => {
 
-
-    createCards = () => {
         // Create an array of Card components using the cardsImagesArray
-        const cardsArray = this.state.cardsImagesArray.map((cardInfo, index) => (
+        const cardsArray = gameState.cardsImagesArray.map((cardInfo, index) => (
             <Card
                 key={index} // Unique key for each card
                 dataId={index} // Data ID for identifying the card
                 imagePath={cardInfo.path} // Image path for the card
-                onPress={() => this.flipCard(index)} // Callback for when the card is pressed
+                isFrontVisible={false}
+                isMatched={false}
+                onCardPress={() => this.flipCard(index)} // Callback for when the card is pressed
             />
         ));
 
-        // Update the state with the newly created cardsArray
-        this.setState({ cardsArray });
-    }
+        // Update the game state with the newly created cardsArray
+        setGameState(prevState => ({ ...prevState, cardsArray }));
+    };
 
-
-
-    clickCards = () => {
+    const clickCards = () => {
 
         // Map over the existing cardsArray in the state
-        const updatedCardsArray = this.state.cardsArray.map((card, index) => (
+        const updatedCardsArray = gameState.cardsArray.map((card, index) => (
 
             // Clone the Card component and update its onPress prop
             React.cloneElement(card, {
 
                 // When the card is pressed, call the flipCard function with the card's index
-                onCardPress: () => this.flipCard(index),
+                onCardPress: () => flipCard(index),
 
                 // Assign a unique key to the cloned card
                 key: index,
@@ -99,63 +106,59 @@ class MixOrMatch extends Component {
         ));
 
         // Update the state with the updated cardsArray
-        this.setState({ cardsArray: updatedCardsArray });
+        setGameState(prevState => ({ ...prevState, cardsArray: updatedCardsArray }));
     }
 
-
-
-    shuffleCards = () => {
-
+    const shuffleCards = (cardsArray) => {
         // Create a copy of the cardsImagesArray to shuffle
-        const shuffledImagesArray = [...this.state.cardsImagesArray];
+        const shuffledImagesArray = [...gameState.cardsImagesArray];
 
         // Use the sort function with a random sorting criterion
         shuffledImagesArray.sort(() => Math.random() - 0.5);
 
         // Update the state with the shuffled cardsImagesArray
-        this.setState({ cardsImagesArray: shuffledImagesArray });
-    }
+        setGameState(prevState => ({ ...prevState, cardsImagesArray: shuffledImagesArray }));
+    };
 
-
-
-    startCountdown = () => {
+    const startCountdown = () => {
         // Start the countdown interval
         const countdown = setInterval(() => {
-            this.setState(prevState => ({
-                timeRemaining: prevState.timeRemaining - 1
+            setGameState(prevState => ({ ...prevState,
+                timeRemaining: timeRemaining - 1
             }));
 
             // Check if time has run out
-            if (this.state.timeRemaining === 0) {
+            if (gameState.timeRemaining === 0) {
                 clearInterval(countdown);
-                this.gameOver();
+                gameOver();
             }
         }, 1000);
 
         return countdown;
-    }
+    };
 
 
 
-    flipCard = (cardId) => {
+    //continuar aqui
 
+    const flipCard = (cardId) => {
         // Check if the card can be flipped based on game conditions
-        if (this.canFlipCard(cardId)) {
+        if (canFlipCard(cardId)) {
 
             // Create copies of selectedCards and selectedCardsIds arrays
-            const updatedSelectedCards = [...this.state.selectedCards];
-            const updatedSelectedCardsIds = [...this.state.selectedCardsIds];
+            const updatedSelectedCards = [...gameState.selectedCards];
+            const updatedSelectedCardsIds = [...gameState.selectedCardsIds];
 
             // Check if a card can be added to the selected cards
             if (updatedSelectedCards.length < 2 && !updatedSelectedCardsIds.includes(cardId)) {
 
                 // Add the selected card to the arrays
-                updatedSelectedCards.push(this.state.cardsImagesArray[cardId].name);
+                updatedSelectedCards.push(gameState.cardsImagesArray[cardId].name);
                 updatedSelectedCardsIds.push(cardId);
             }
 
             // Play flip sound
-            this.audioController.flip();
+            // this.audioController.flip();
 
             // Update state with updated selected cards and totalClicks
             this.setState(prevState => ({
@@ -183,16 +186,14 @@ class MixOrMatch extends Component {
         }
 
         // Check for 'hard' level and total clicks exceeding 20
-        if (this.state.level === 'hard' && this.state.totalClicks > 20) {
+        // if (this.state.level === 'hard' && this.state.totalClicks > 20) {
 
-            // End the game
-            this.gameOver();
-        }
-    }
+        //     // End the game
+        //     this.gameOver();
+        // }
+    };
 
-
-
-    canFlipCard = (cardId) => {
+    const canFlipCard = (cardId) => {
 
         // Check if the game is not busy, card is not matched, and fewer than 2 cards are selected
         return (
@@ -202,10 +203,7 @@ class MixOrMatch extends Component {
         );
     }
 
-
-
-    checkForCardMatch = () => {
-
+    const checkForCardMatch = () => {
         // Get the IDs and names of the selected cards
         const [firstCardId, secondCardId] = this.state.selectedCardsIds;
         const firstCardName = this.state.cardsImagesArray[firstCardId].name;
@@ -218,7 +216,7 @@ class MixOrMatch extends Component {
                 matchedCards: [...prevState.matchedCards, firstCardId, secondCardId],
             }));
 
-            this.audioController.match();
+            // this.audioController.match();
         } else {
 
             // Cards don't match, flip them back after a delay
@@ -242,33 +240,21 @@ class MixOrMatch extends Component {
         }
     }
 
-
-
-    clearCards = () => {
-        this.setState({ cardsArray: [] });
-    }
-
-
-
-    gameOver = () => {
+    const gameOver = () => {
         clearInterval(this.countdown); // Clear the countdown interval
-        this.audioController.gameOver(); // Play game over sound
+        // this.audioController.gameOver(); // Play game over sound
         this.setState({ gameOverVisible: true }); // Update state to show game over screen
     }
 
-
-
-    victory = () => {
+    const victory = () => {
         clearInterval(this.countdown); // Clear the countdown interval
-        this.audioController.victory(); // Play victory sound
+        // this.audioController.victory(); // Play victory sound
         this.setState({ victoryVisible: true }); // Update state to show victory screen
     }
 
 
 
-    render() {
-        return <></>
-    }
-}
+    return null
+};
 
-export default MixOrMatch;
+export { GameLogic };

@@ -10,7 +10,9 @@ const styles = StyleSheet.create({
   },
 
   cardContainer: {
+    flex: 1,
     backgroundColor: "#fff",
+    margin: 20,
   }
 })
 

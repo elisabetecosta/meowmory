@@ -10,7 +10,7 @@ import ScreenHeaderBtn from "../components/Header/ScreenHeaderBtn"
 import WelcomeScreen from "../screens/Home/WelcomeScreen"
 import RulesScreen from "../screens/Rules/RulesScreen"
 import LevelSelectionScreen from "../screens/Levels/LevelSelectionScreen"
-import GameScreen from "../screens/Game/GameScreen"
+import MixOrMatch from "../screens/Game/MixOrMatch"
 import VictoryScreen from "../screens/Victory/VictoryScreen"
 import GameOverScreen from "../screens/GameOver/GameOverScreen"
 
@@ -59,7 +59,7 @@ const StackComponent = () => {
 
                 <Stack.Screen
                     name="Game"
-                    component={GameScreen}
+                    component={MixOrMatch}
                     options={({ route }) => ({
                         headerStyle: { backgroundColor: COLORS.primary },
                         headerShadowVisible: false,
