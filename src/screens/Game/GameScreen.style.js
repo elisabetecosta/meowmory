@@ -11,6 +11,10 @@ const styles = StyleSheet.create({
 
   cardContainer: {
     flex: 1,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    padding: 5,
     backgroundColor: "#fff",
     margin: 20,
   }

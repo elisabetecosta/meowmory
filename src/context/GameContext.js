@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState } from 'react';
-import { GameLogic } from '../utils/GameLogic';
+import { GameLogic } from '../screens/Game/GameLogic';
 
 const GameContext = createContext();
 

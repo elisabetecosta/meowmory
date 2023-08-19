@@ -10,7 +10,7 @@ import ScreenHeaderBtn from "../components/Header/ScreenHeaderBtn"
 import WelcomeScreen from "../screens/Home/WelcomeScreen"
 import RulesScreen from "../screens/Rules/RulesScreen"
 import LevelSelectionScreen from "../screens/Levels/LevelSelectionScreen"
-import MixOrMatch from "../screens/Game/MixOrMatch"
+import GameLogic from "../screens/Game/GameLogic"
 import VictoryScreen from "../screens/Victory/VictoryScreen"
 import GameOverScreen from "../screens/GameOver/GameOverScreen"
 
@@ -59,7 +59,7 @@ const StackComponent = () => {
 
                 <Stack.Screen
                     name="Game"
-                    component={MixOrMatch}
+                    component={GameLogic}
                     options={({ route }) => ({
                         headerStyle: { backgroundColor: COLORS.primary },
                         headerShadowVisible: false,
@@ -93,9 +93,3 @@ const StackComponent = () => {
 }
 
 export default StackComponent
-
-//https://www.youtube.com/playlist?list=PLdDT8if5attFMHps_Mn6DfXw-BsIyWb3u
-
-//https://youtu.be/6vvaEjpu5VU?t=287
-//https://reactnavigation.org/docs/hello-react-navigation
-//https://stackoverflow.com/questions/52307978/how-to-disable-react-navigations-stack-navigator-transition

@@ -9,8 +9,6 @@ import * as SplashScreen from "expo-splash-screen"
 //
 import StackComponent from "./src/routes/stack"
 
-//
-import { GameProvider } from "./src/context/GameContext"
 
 import { COLORS, FONT, SIZES } from "./src/constants"
 
@@ -33,9 +31,7 @@ const App = () => {
     return (
 
         <SafeAreaView style={styles.container}>
-            <GameProvider>
-                <StackComponent onLayout={onLayoutRootView} />
-            </GameProvider>
+            <StackComponent onLayout={onLayoutRootView} />
         </SafeAreaView>
     )
 }
