@@ -13,7 +13,7 @@ import Animated, {
 import cardBack from "../../../assets/images/card-back.png"
 import styles from "./Card.style"
 
-const Card = ({ dataId, imagePath, isFrontVisible, isMatched, onCardPress }) => {
+const Card = ({ cardId, imagePath, isFrontVisible, isMatched, onCardPress }) => {
 
     const spin = useSharedValue(0);
     
@@ -42,10 +42,17 @@ const Card = ({ dataId, imagePath, isFrontVisible, isMatched, onCardPress }) => 
       }, []);
 
 
+      const handleCardPress = () => {
+
+        spin.value = spin.value ? 0 : 1
+        onCardPress(cardId)
+      }
+
+
     return (
 
         <View
-            onTouchEnd={() => (spin.value = spin.value ? 0 : 1)}
+            onTouchEnd={handleCardPress}
         >
             <Animated.View style={[styles.cardFront, frontAnimatedStyle]}>
                 <Image source={imagePath} style={styles.cardImage} />
@@ -54,22 +61,6 @@ const Card = ({ dataId, imagePath, isFrontVisible, isMatched, onCardPress }) => 
                 <Image source={cardBack} style={styles.cardImage} />
             </Animated.View>
         </View>
-
-        // <View
-        //     style={[
-        //         styles.card,
-        //         isFrontVisible || isMatched ? styles.visible : null
-        //     ]}
-        //     onTouchEnd={() => onCardPress(dataId)}
-        // >
-        //     <View style={styles.cardFace}>
-        //         {isFrontVisible || isMatched ? (
-        //             <Image source={imagePath} style={styles.cardImage} />
-        //         ) : (
-        //             <Image source={cardBack} style={[styles.cardImage, styles.cardBack]} />
-        //         )}
-        //     </View>
-        // </View>
     )
 }
 

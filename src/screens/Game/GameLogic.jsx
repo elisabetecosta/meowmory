@@ -1,5 +1,14 @@
+//TODO
+// figure out why cards with the same image have different names and paths
+// can only flip a card when its on its back and should have a function to flip them back automatically if they are not a match
+// make sure that the cards selected are sent to the selectedCards array and no more than 2
+// make the match functionality work
+// matched cards should be sent to the matchedCards array
+// matched cards should remain visible
+
+
+
 import React, { useState, useEffect } from 'react';
-import { useRoute } from '@react-navigation/native'
 import { View, Text } from "react-native"
 import Card from '../../components/Card/Card';
 
@@ -7,7 +16,6 @@ import GameOverScreen from "../GameOver/GameOverScreen"
 import VictoryScreen from "../Victory/VictoryScreen"
 
 import styles from "./GameScreen.style"
-
 
 
 // tentar 
@@ -25,30 +33,30 @@ const GameLogic = ({ route }) => {
 
     const { level } = route.params
 
-
+    // Function responsible for initializing the game, needs to stay here
     const initializeGameState = () => {
 
         return {
-            timeRemaining: 100,
-            totalClicks: 0,
             cardsArray: [
-                { name: 'card-01', path: card01, isFrontVisible: false, isMatched: false },
-                { name: 'card-02', path: card02, isFrontVisible: false, isMatched: false },
-                { name: 'card-03', path: card03, isFrontVisible: false, isMatched: false },
-                { name: 'card-04', path: card04, isFrontVisible: false, isMatched: false },
-                { name: 'card-05', path: card05, isFrontVisible: false, isMatched: false },
-                { name: 'card-06', path: card06, isFrontVisible: false, isMatched: false },
-                { name: 'card-01', path: card01, isFrontVisible: false, isMatched: false },
-                { name: 'card-02', path: card02, isFrontVisible: false, isMatched: false },
-                { name: 'card-03', path: card03, isFrontVisible: false, isMatched: false },
-                { name: 'card-04', path: card04, isFrontVisible: false, isMatched: false },
-                { name: 'card-05', path: card05, isFrontVisible: false, isMatched: false },
-                { name: 'card-06', path: card06, isFrontVisible: false, isMatched: false },
+                { name: 'card-01', path: card01 },
+                { name: 'card-02', path: card02 },
+                { name: 'card-03', path: card03 },
+                { name: 'card-04', path: card04 },
+                { name: 'card-05', path: card05 },
+                { name: 'card-06', path: card06 },
+                { name: 'card-01', path: card01 },
+                { name: 'card-02', path: card02 },
+                { name: 'card-03', path: card03 },
+                { name: 'card-04', path: card04 },
+                { name: 'card-05', path: card05 },
+                { name: 'card-06', path: card06 },
             ],
             createdCards: [],
             selectedCards: [],
             selectedCardsIds: [],
             matchedCards: [],
+            timeRemaining: 100,
+            totalClicks: 0,
             busy: false,
             gameOverVisible: false,
             victoryVisible: false,
@@ -88,8 +96,8 @@ const GameLogic = ({ route }) => {
     }, [gameState.timeRemaining]);
 
 
-    // FUNCTIONS
 
+    // FUNCTIONS
 
     const startGame = (level) => {
 
@@ -108,6 +116,7 @@ const GameLogic = ({ route }) => {
         setTimer(level)
     }
 
+
     const setTimer = (level) => {
         let timeRemaining = 0;
 
@@ -118,28 +127,23 @@ const GameLogic = ({ route }) => {
         setGameState(prevState => ({ ...prevState, timeRemaining }));
     };
 
+
     const shuffleCards = () => {
 
-        // Create a copy of the cardsArray to shuffle
-        const shuffledCardsArray = [...gameState.cardsArray]
+        const cardsArray = [...gameState.cardsArray]; // Copy the original cards array
 
-        // Use the sort function with a random sorting criterion
-        return shuffledCardsArray.sort(() => Math.random() - 0.5);
+        for (let i = cardsArray.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [cardsArray[i], cardsArray[j]] = [cardsArray[j], cardsArray[i]];
+        }
 
-        //     // Create a copy of the cardsArray to shuffle
-        //     const shuffledCardsArray = [...gameState.cardsArray]
-
-        //     // Use the sort function with a random sorting criterion
-        //     shuffledCardsArray.sort(() => Math.random() - 0.5);
-
-        //     // Update the state with the shuffled cardsArray
-        //     setGameState(prevState => ({ ...prevState, cardsArray: shuffledCardsArray }));
-
-        //     // console.log(shuffledCardsArray)
+        return cardsArray;
     };
+
 
     const createCards = () => {
 
+        //
         const shuffledCardsArray = shuffleCards()
 
         // Create an array of Card components using the cardsArray
@@ -148,24 +152,28 @@ const GameLogic = ({ route }) => {
                 key={index} // Unique key for each card
                 dataId={index} // Data ID for identifying the card
                 imagePath={cardInfo.path} // Image path for the card
-                isFrontVisible={cardInfo.isFrontVisible}
-                isMatched={cardInfo.isMatched}
-            // onCardPress={() => {
+                // isFrontVisible={cardInfo.isFrontVisible}
+                // isMatched={cardInfo.isMatched}
+                onCardPress={() => {
 
-            //     console.log(cardInfo)
-            //     flipCard(index)
+                    //     console.log(cardInfo)
+                    flipCard(index)
 
-            // }} // Callback for when the card is pressed
+                }}
             />
         ));
 
         // Update the game state with the newly createdCards
         setGameState(prevState => ({ ...prevState, createdCards }));
-
-        console.log(createdCards)
     };
 
+
     const flipCard = (cardId) => {
+
+        // Debugging
+        console.log("Card ID:", cardId);
+        // console.log("cardsArray:", gameState.cardsArray);
+        console.log("cardsArray[cardId]:", gameState.cardsArray[cardId]);
 
         // Check if the card can be flipped based on game conditions
         if (canFlipCard(cardId)) {
@@ -189,37 +197,26 @@ const GameLogic = ({ route }) => {
             setGameState(prevState => ({
                 ...prevState,
                 totalClicks: prevState.totalClicks + 1,
-                selectedCards: updatedSelectedCards,
-                selectedCardsIds: updatedSelectedCardsIds,
+                selectedCards: [...prevState.selectedCards, ...updatedSelectedCards],
+                selectedCardsIds: [...prevState.selectedCardsIds, ...updatedSelectedCardsIds],
             }));
 
-            // Update the cardsArray with the flipped card
-            // const updatedCardsArray = [...gameState.cardsArray];
-            // updatedCardsArray[cardId].isFrontVisible = true;
 
-            // // console.log(updatedCardsArray)
-
-            // setGameState(prevState => ({
-            //     ...prevState,
-            //     totalClicks: prevState.totalClicks + 1,
-            //     selectedCards: [...prevState.selectedCards, updatedCardsArray[cardId].name],
-            //     selectedCardsIds: [...prevState.selectedCardsIds, cardId],
-            //     cardsArray: updatedCardsArray,
-            // }));
-
-            // Update state with the updated createdCards
-            // setGameState(prevState => ({ ...prevState, cardsArray: updatedCardsArray }));
+            console.log(updatedSelectedCards)
+            console.log(gameState.selectedCardsIds)
         }
 
         // Check if two cards are selected
         if (gameState.selectedCards.length === 2) {
 
+            console.log("2 cards selected")
+
             // After a brief delay, check for a card match
             setTimeout(() => checkForCardMatch(), 500);
         }
 
-        // Check for 'hard' level and total clicks exceeding 20
-        // if (level === 'hard' && gameState.totalClicks > 20) {
+        // Check for 'hard' level and total clicks exceeding 16
+        // if (level === 'hard' && gameState.totalClicks > 16) {
 
         //     // End the game
         //     console.log('gameover')
@@ -228,85 +225,28 @@ const GameLogic = ({ route }) => {
     };
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // const flipCard = (cardId) => {
-
-    //     // Check if the card can be flipped based on game conditions
-    //     if (canFlipCard(cardId)) {
-
-    //         // Create copies of selectedCards and selectedCardsIds arrays
-    //         const updatedSelectedCards = [...gameState.selectedCards];
-    //         const updatedSelectedCardsIds = [...gameState.selectedCardsIds];
-
-    //         // Check if a card can be added to the selected cards
-    //         if (updatedSelectedCards.length < 2 && !updatedSelectedCardsIds.includes(cardId)) {
-
-    //             // Add the selected card to the arrays
-    //             updatedSelectedCards.push(gameState.cardsArray[cardId].name);
-    //             updatedSelectedCardsIds.push(cardId);
-    //         }
-
-    //         // Play flip sound
-    //         // audioController.flip();
-
-    //         // Update state with updated selected cards and totalClicks
-    //         setGameState(prevState => ({
-    //             ...prevState, totalClicks: gameState.totalClicks + 1,
-    //             selectedCards: updatedSelectedCards,
-    //             selectedCardsIds: updatedSelectedCardsIds,
-    //         }));
-
-    //         // Update the cardsArray with the flipped card
-    //         const updatedCardsArray = gameState.cardsArray.map((card, index) => (
-    //             index === cardId
-    //                 ? React.cloneElement(card, { isFrontVisible: true })
-    //                 : card
-    //         ));
-
-    //         // Update state with the updated cardsArray
-    //         setGameState(prevState => ({ ...prevState, cardsArray: updatedCardsArray }));
-    //     }
-
-    //     // Check if two cards are selected
-    //     if (gameState.selectedCards.length === 2) {
-
-    //         // After a brief delay, check for a card match
-    //         setTimeout(() => checkForCardMatch(), 500);
-    //     }
-
-    //     // Check for 'hard' level and total clicks exceeding 20
-    //     // if (level === 'hard' && gameState.totalClicks > 20) {
-
-    //     //     // End the game
-    //     //     gameOver();
-    //     // }
-    // };
-
     const canFlipCard = (cardId) => {
 
         // Check if the game is not busy, card is not matched, and fewer than 2 cards are selected
         return (
             !gameState.busy &&                   // Game should not be busy with animations
             !gameState.matchedCards.includes(cardId) && // Card should not be already matched
+            !gameState.selectedCards.includes(cardId) && // Card should not be already selected
             gameState.selectedCards.length < 2   // No more than 2 cards can be selected
         );
     }
 
     const checkForCardMatch = () => {
+
+        // Debugging
+        console.log("firstCardId:", firstCardId);
+        console.log("secondCardId:", secondCardId);
+        console.log("cardsImagesArray:", gameState.cardsImagesArray);
+        console.log("cardsImagesArray[firstCardId]:", gameState.cardsImagesArray[firstCardId]);
+        console.log("cardsImagesArray[secondCardId]:", gameState.cardsImagesArray[secondCardId]);
+
+
+
         // Get the IDs and names of the selected cards
         const [firstCardId, secondCardId] = gameState.selectedCardsIds;
         const firstCardName = gameState.cardsImagesArray[firstCardId].name;
@@ -338,6 +278,7 @@ const GameLogic = ({ route }) => {
         }
     }
 
+
     const gameOver = () => {
 
         // Play game over sound
@@ -346,6 +287,7 @@ const GameLogic = ({ route }) => {
         // Update state to show game over screen
         setGameState(prevState => ({ ...prevState, gameOverVisible: true }));
     }
+
 
     const victory = () => {
 
