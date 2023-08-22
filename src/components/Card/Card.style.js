@@ -27,6 +27,11 @@ const styles = StyleSheet.create({
     width: 83,
     borderRadius: 10,
   },
+
+  flipped: {
+    borderWidth: 2,
+    borderColor: "#000",
+  }
 })
 
 export default styles

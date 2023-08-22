@@ -13,7 +13,7 @@ import Animated, {
 import cardBack from "../../../assets/images/card-back.png"
 import styles from "./Card.style"
 
-const Card = ({ cardId, imagePath, isFrontVisible, isMatched, onCardPress }) => {
+const Card = ({ card, flipped, matched, onCardPress }) => {
 
     const spin = useSharedValue(0);
     
@@ -44,20 +44,20 @@ const Card = ({ cardId, imagePath, isFrontVisible, isMatched, onCardPress }) => 
 
       const handleCardPress = () => {
 
-        spin.value = spin.value ? 0 : 1
-        onCardPress(cardId)
+        if (!card.matched && spin.value === 0) {
+          spin.value = 1; // Flip the card
+          onCardPress(card.id);
+        }
       }
 
 
     return (
-
-        <View
-            onTouchEnd={handleCardPress}
-        >
+      // flipped || matched ? styles.flipped : null
+        <View>
             <Animated.View style={[styles.cardFront, frontAnimatedStyle]}>
-                <Image source={imagePath} style={styles.cardImage} />
+                <Image source={card.path} style={styles.cardImage} />
             </Animated.View>
-            <Animated.View style={[styles.cardBack, backAnimatedStyle]}>
+            <Animated.View onTouchEnd={handleCardPress} style={[styles.cardBack, backAnimatedStyle]}>
                 <Image source={cardBack} style={styles.cardImage} />
             </Animated.View>
         </View>
