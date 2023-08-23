@@ -17,7 +17,31 @@ const styles = StyleSheet.create({
     padding: 5,
     backgroundColor: "#fff",
     margin: 20,
-  }
+  },
+
+  cardFront: {
+    position: "absolute",
+    height: 117,
+    width: 83,
+    borderRadius: 10,
+    margin: 5,
+    // elevation: 3,
+  },
+
+  cardBack: {
+    backfaceVisibility: "hidden",
+    height: 117,
+    width: 83,
+    borderRadius: 10,
+    margin: 5,
+    // elevation: 3,
+  },
+
+  cardImage: {
+    height: 117,
+    width: 83,
+    borderRadius: 10,
+  },
 })
 
 export default styles

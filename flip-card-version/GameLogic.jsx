@@ -1,18 +1,12 @@
 //TODO
-// inspect the useAnimatedStyle so I can find how to improve the animation of the cards
+// can only flip a card when its on its back and should have a function to flip them back automatically if they are not a match
+// matched cards should be sent to the matchedCards array
+// matched cards should remain visible
 
 
 
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image } from "react-native"
-import Animated, {
-    Extrapolate,
-    interpolate,
-    useAnimatedStyle,
-    useSharedValue,
-    withSpring,
-    withTiming,
-} from "react-native-reanimated";
+import { View, Text, FlatList } from "react-native"
 import Card from '../../components/Card/Card';
 
 import GameOverScreen from "../GameOver/GameOverScreen"
@@ -23,7 +17,6 @@ import styles from "./GameScreen.style"
 
 // tentar 
 //import images from "../../constants"
-import cardBack from "../../../assets/images/card-back.png"
 import card01 from "../../../assets/images/card-01.png"
 import card02 from "../../../assets/images/card-02.png"
 import card03 from "../../../assets/images/card-03.png"
@@ -55,42 +48,19 @@ const GameLogic = ({ route }) => {
     //         victoryVisible: false,
 
 
-
-    // Animation Logic
-    // const spin = useSharedValue(0);
-
-    const frontAnimatedStyle = (spin) => {
-        const spinVal = interpolate(spin, [0, 1], [180, 0]);
-        return {
-            transform: [{ rotateY: `${spinVal}deg` }],
-        };
-    }
-
-
-    const backAnimatedStyle = (spin) => {
-        const spinVal = interpolate(spin, [0, 1], [360, 180]);
-        return {
-            transform: [{ rotateY: `${spinVal}deg` }],
-        };
-    }
-
-
     // const [gameState, setGameState] = useState(initializeGameState());
     const [timeRemaining, setTimeRemaining] = useState(100)
     const [totalFlips, setTotalFlips] = useState(0)
     const [cards, setCards] = useState([])
     const [firstCard, setFirstCard] = useState(null)
     const [secondCard, setSecondCard] = useState(null)
+    const [disabled, setDisabled] = useState(false)
     const [countdown, setCountdown] = useState(timeRemaining);
 
 
     // START GAME
     useEffect(() => {
-
-        // audioController.startMusic();
-        resetTurn()
-        setTimer(level)
-        shuffleCards()
+        startGame(level);
     }, []);
 
 
@@ -118,6 +88,8 @@ const GameLogic = ({ route }) => {
     useEffect(() => {
 
         if (firstCard && secondCard) {
+            
+            setDisabled(true)
 
             if (firstCard.name === secondCard.name) {
 
@@ -184,7 +156,7 @@ const GameLogic = ({ route }) => {
 
 
                     resetTurn()
-                }, 500)
+                }, 1000)
             }
         }
     }, [firstCard, secondCard])
@@ -193,6 +165,19 @@ const GameLogic = ({ route }) => {
 
     // FUNCTIONS
 
+
+    const startGame = (level) => {
+
+        // audioController.startMusic();
+
+        resetTurn()
+        shuffleCards()
+
+        // Sets the initial timer
+        setTimer(level)
+    }
+
+
     const setTimer = (level) => {
         let timeRemaining = 0;
 
@@ -200,15 +185,25 @@ const GameLogic = ({ route }) => {
         if (level === 'medium') timeRemaining = 60;
         if (level === 'hard') timeRemaining = 30;
 
-        setTimeRemaining(timeRemaining)
+        // setGameState(prevState => ({ ...prevState, timeRemaining }));
     };
 
 
     const shuffleCards = () => {
 
+        // const cardsArray = [...gameState.cardsArray]; // Copy the original cards array
+
+        // for (let i = cardsArray.length - 1; i > 0; i--) {
+        //     const j = Math.floor(Math.random() * (i + 1));
+        //     [cardsArray[i], cardsArray[j]] = [cardsArray[j], cardsArray[i]];
+        // }
+
+        // return cardsArray;
+
+
         const shuffledCards = [...cardsArray, ...cardsArray]
             .sort(() => Math.random() - 0.5)
-            .map((card) => ({ ...card, id: Math.random(), spin: 0 }))
+            .map((card) => ({ ...card, id: Math.random() }))
 
         setCards(shuffledCards)
     };
@@ -224,16 +219,20 @@ const GameLogic = ({ route }) => {
         //     // audioController.flip();
 
 
-        if (!card.matched && card.spin === 0) {
-            const updatedCards = cards.map((c) =>
-              c.id === card.id ? { ...c, spin: 1 } : c
-            );
-            setCards(updatedCards);
-        }
-        
+        console.log(card)
+
+
         firstCard ? setSecondCard(card) : setFirstCard(card)
 
         setTotalFlips(prevState => prevState + 1)
+
+        //if (firstCard && secondCard) {
+
+        //     console.log("2 cards selected")
+
+        //     // After a brief delay, check for a card match
+        //     setTimeout(() => checkForCardMatch(), 500);
+        // }
 
         // Check for 'hard' level and total clicks exceeding 16
         // if (level === 'hard' && totalFlips > 16) {
@@ -279,6 +278,7 @@ const GameLogic = ({ route }) => {
     const resetTurn = () => {
         setFirstCard(null)
         setSecondCard(null)
+        setDisabled(false)
     }
 
 
@@ -291,29 +291,24 @@ const GameLogic = ({ route }) => {
             <Text>{totalFlips}</Text>
 
             {/* Render game board with all the cards */}
-            <View style={styles.cardContainer}>
-                {cards.map(card => (
-
-                    <View key={card.id} onTouchEnd={() => flipCard(card)}>
-                        <Animated.View style={[styles.cardFront, frontAnimatedStyle(card.spin)]}>
-                            <Image source={card.path} style={styles.cardImage} />
-                        </Animated.View>
-                        <Animated.View style={[styles.cardBack, backAnimatedStyle(card.spin)]}>
-                            <Image source={cardBack} style={styles.cardImage} />
-                        </Animated.View>
-                    </View>
-                    // <Card
-                    //     key={card.id}
-                    //     card={card}
-                    //     frontAnimatedStyle={frontAnimatedStyle}
-                    //     backAnimatedStyle={backAnimatedStyle}
-                    //     // flipped={card === firstCard || card === secondCard || card.matched}
-                    //     // matched={card.matched}
-                    //     // spin={card.spin}
-                    //     onCardPress={() => flipCard(card)}
-                    // />
-                ))}
-            </View>
+            {/* <View style={styles.cardsContainer}> */}
+                <FlatList
+                    style={styles.cardsContainer}
+                    data={cards}
+                    numColumns={3} // Adjust the number of columns as needed
+                    keyExtractor={(item) => item.id.toString()}
+                    renderItem={({ item }) => (
+                        <Card
+                            key={item.id}
+                            card={item}
+                            flipped={item === firstCard || item === secondCard || item.matched}
+                            matched={item.matched}
+                            disabled={disabled}
+                            onCardPress={() => flipCard(item)}
+                        />
+                    )}
+                />
+            {/* </View> */}
 
             {/* Render game over screen */}
             {/* {gameOverVisible && <GameOverScreen />} */}
