@@ -1,37 +1,24 @@
-//TODO
-// inspect the useAnimatedStyle so I can find how to improve the animation of the cards
-
+// TODO 
+// - disable cards if they are matched, already flipped or 2 are already flipped, use the canFlipCard function for that
+// - add audio effects 
+// - trigger the gameover and victory functions, using the navigation to move to the victory/gameover screen
+// - do as much refactoring as possible without making the code stop working
+// - add detailed comments
+// - improve styling of the component
+// - remove old and unnecessary code
+// - create a component that has a title, text and button and that can be reused for the rules, victory and gameover screens
 
 
 import React, { useState, useEffect } from 'react';
 import { View, Text, Image } from "react-native"
-import Animated, {
-    Extrapolate,
-    interpolate,
-    useAnimatedStyle,
-    useSharedValue,
-    withSpring,
-    withTiming,
-} from "react-native-reanimated";
-import Card from '../../components/Card/Card';
+import Animated, { interpolate } from "react-native-reanimated";
+
+import cardImages from "../../constants/images"
 
 import GameOverScreen from "../GameOver/GameOverScreen"
 import VictoryScreen from "../Victory/VictoryScreen"
 
 import styles from "./GameScreen.style"
-
-
-// tentar 
-//import images from "../../constants"
-import cardBack from "../../../assets/images/card-back.png"
-import card01 from "../../../assets/images/card-01.png"
-import card02 from "../../../assets/images/card-02.png"
-import card03 from "../../../assets/images/card-03.png"
-import card04 from "../../../assets/images/card-04.png"
-import card05 from "../../../assets/images/card-05.png"
-import card06 from "../../../assets/images/card-06.png"
-
-
 
 
 
@@ -40,12 +27,12 @@ const GameLogic = ({ route }) => {
     const { level } = route.params
 
     const cardsArray = [
-        { name: 'card-01', path: card01, matched: false },
-        { name: 'card-02', path: card02, matched: false },
-        { name: 'card-03', path: card03, matched: false },
-        { name: 'card-04', path: card04, matched: false },
-        { name: 'card-05', path: card05, matched: false },
-        { name: 'card-06', path: card06, matched: false },
+        { name: 'card-01', path: cardImages.card01, matched: false },
+        { name: 'card-02', path: cardImages.card02, matched: false },
+        { name: 'card-03', path: cardImages.card03, matched: false },
+        { name: 'card-04', path: cardImages.card04, matched: false },
+        { name: 'card-05', path: cardImages.card05, matched: false },
+        { name: 'card-06', path: cardImages.card06, matched: false },
     ]
 
 
@@ -57,18 +44,10 @@ const GameLogic = ({ route }) => {
 
 
     // Animation Logic
-    // const spin = useSharedValue(0);
-
-    const frontAnimatedStyle = (spin) => {
-        const spinVal = interpolate(spin, [0, 1], [180, 0]);
-        return {
-            transform: [{ rotateY: `${spinVal}deg` }],
-        };
-    }
-
-
-    const backAnimatedStyle = (spin) => {
-        const spinVal = interpolate(spin, [0, 1], [360, 180]);
+    const AnimatedStyle = (spin, side) => {
+        
+        const spinVal = interpolate(spin, [0, 1], side === 'front' ? [180, 0] : [360, 180]);
+        
         return {
             transform: [{ rotateY: `${spinVal}deg` }],
         };
@@ -193,6 +172,12 @@ const GameLogic = ({ route }) => {
 
     // FUNCTIONS
 
+    const resetTurn = () => {
+        setFirstCard(null)
+        setSecondCard(null)
+    }
+
+
     const setTimer = (level) => {
         let timeRemaining = 0;
 
@@ -276,10 +261,7 @@ const GameLogic = ({ route }) => {
     //     setGameState(prevState => ({ ...prevState, victoryVisible: true }));
     // }
 
-    const resetTurn = () => {
-        setFirstCard(null)
-        setSecondCard(null)
-    }
+    
 
 
 
@@ -295,23 +277,13 @@ const GameLogic = ({ route }) => {
                 {cards.map(card => (
 
                     <View key={card.id} onTouchEnd={() => flipCard(card)}>
-                        <Animated.View style={[styles.cardFront, frontAnimatedStyle(card.spin)]}>
+                        <Animated.View style={[styles.cardFront, AnimatedStyle(card.spin, 'front')]}>
                             <Image source={card.path} style={styles.cardImage} />
                         </Animated.View>
-                        <Animated.View style={[styles.cardBack, backAnimatedStyle(card.spin)]}>
-                            <Image source={cardBack} style={styles.cardImage} />
+                        <Animated.View style={[styles.cardBack, AnimatedStyle(card.spin, 'back')]}>
+                            <Image source={cardImages.cardBack} style={styles.cardImage} />
                         </Animated.View>
                     </View>
-                    // <Card
-                    //     key={card.id}
-                    //     card={card}
-                    //     frontAnimatedStyle={frontAnimatedStyle}
-                    //     backAnimatedStyle={backAnimatedStyle}
-                    //     // flipped={card === firstCard || card === secondCard || card.matched}
-                    //     // matched={card.matched}
-                    //     // spin={card.spin}
-                    //     onCardPress={() => flipCard(card)}
-                    // />
                 ))}
             </View>
 

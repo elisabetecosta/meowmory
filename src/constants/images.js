@@ -6,7 +6,7 @@ import card05 from "../../assets/images/card-05.png"
 import card06 from "../../assets/images/card-06.png"
 import cardBack from "../../assets/images/card-back.png"
 
-export default {
+const cardImages = {
   card01,
   card02,
   card03,
@@ -15,3 +15,5 @@ export default {
   card06,
   cardBack
 }
+
+export default cardImages
