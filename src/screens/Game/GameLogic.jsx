@@ -1,7 +1,5 @@
 // TODO 
-// - disable cards if they are matched, already flipped or 2 are already flipped, use the canFlipCard function for that
 // - add audio effects 
-// - trigger the gameover and victory functions, using the navigation to move to the victory/gameover screen
 // - do as much refactoring as possible without making the code stop working
 // - add detailed comments
 // - improve styling of the component
@@ -10,14 +8,12 @@
 
 
 import React, { useState, useEffect } from 'react';
+import { useNavigation } from '@react-navigation/native'
 import { View, Text, Image } from "react-native"
 import Animated, { interpolate } from "react-native-reanimated";
 
+import AudioController from '../../utils/AudioController'
 import cardImages from "../../constants/images"
-
-import GameOverScreen from "../GameOver/GameOverScreen"
-import VictoryScreen from "../Victory/VictoryScreen"
-
 import styles from "./GameScreen.style"
 
 
@@ -26,47 +22,46 @@ const GameLogic = ({ route }) => {
 
     const { level } = route.params
 
-    const cardsArray = [
-        { name: 'card-01', path: cardImages.card01, matched: false },
-        { name: 'card-02', path: cardImages.card02, matched: false },
-        { name: 'card-03', path: cardImages.card03, matched: false },
-        { name: 'card-04', path: cardImages.card04, matched: false },
-        { name: 'card-05', path: cardImages.card05, matched: false },
-        { name: 'card-06', path: cardImages.card06, matched: false },
+    const navigation = useNavigation()
+
+    // const audioController = new AudioController()
+
+    const cardImagesArray = [
+        { name: 'card-01', path: cardImages.card01 },
+        { name: 'card-02', path: cardImages.card02 },
+        { name: 'card-03', path: cardImages.card03 },
+        { name: 'card-04', path: cardImages.card04 },
+        { name: 'card-05', path: cardImages.card05 },
+        { name: 'card-06', path: cardImages.card06 },
     ]
-
-
-    //         
-    //         busy: false,
-    //         gameOverVisible: false,
-    //         victoryVisible: false,
-
 
 
     // Animation Logic
     const AnimatedStyle = (spin, side) => {
-        
+
         const spinVal = interpolate(spin, [0, 1], side === 'front' ? [180, 0] : [360, 180]);
-        
+
         return {
             transform: [{ rotateY: `${spinVal}deg` }],
         };
     }
 
 
-    // const [gameState, setGameState] = useState(initializeGameState());
+    //
     const [timeRemaining, setTimeRemaining] = useState(100)
     const [totalFlips, setTotalFlips] = useState(0)
     const [cards, setCards] = useState([])
     const [firstCard, setFirstCard] = useState(null)
     const [secondCard, setSecondCard] = useState(null)
+    const [matchedCards, setMatchedCards] = useState([])
+    const [disabled, setDisabled] = useState(false)
     const [countdown, setCountdown] = useState(timeRemaining);
 
 
     // START GAME
     useEffect(() => {
 
-        // audioController.startMusic();
+        // audioController.startMusic()
         resetTurn()
         setTimer(level)
         shuffleCards()
@@ -83,7 +78,6 @@ const GameLogic = ({ route }) => {
             } else {
                 clearInterval(countdownInterval);
                 console.log('Countdown reached 0');
-                // gameOver()
             }
         }, 1000);
 
@@ -98,30 +92,29 @@ const GameLogic = ({ route }) => {
 
         if (firstCard && secondCard) {
 
+            setDisabled(true)
+
             if (firstCard.name === secondCard.name) {
 
                 // audioController.match();
 
                 console.log("MATCH")
 
-                setCards(prevCards => {
+                // setCards(prevCards => {
 
-                    return prevCards.map(card => {
+                //     return prevCards.map(card => {
 
-                        if (card.name === firstCard.name) {
-                            return { ...card, matched: true }
-                        } else {
-                            return card
-                        }
-                    })
-                })
+                //         if (card.name === firstCard.name) {
+                //             return { ...card }
+                //         } else {
+                //             return card
+                //         }
+                //     })
+                // })
+
+                setMatchedCards(prevMatchedCards => [...prevMatchedCards, firstCard.name])
 
                 resetTurn()
-
-                // Check for victory condition
-                //     if (gameState.matchedCards.length === cardsArray.length / 2) {
-                //         victory();
-                //     }
             }
 
             else {
@@ -129,10 +122,6 @@ const GameLogic = ({ route }) => {
                 console.log("DID NOT MATCH")
 
                 setTimeout(() => {
-
-                    //flip back cards
-                    // flipBackCards()
-
 
                     // Reset the spin value of the non-matching cards
                     setCards(prevCards => {
@@ -159,14 +148,45 @@ const GameLogic = ({ route }) => {
                         })
                     })
 
-
-
-
                     resetTurn()
                 }, 500)
             }
         }
     }, [firstCard, secondCard])
+
+
+    // GAME OVER
+    useEffect(() => {
+
+        // Check for 'hard' level and total clicks exceeding 16
+        if (timeRemaining === 0 || level === 'hard' && totalFlips > 16) {
+
+            console.log("Game Over")
+
+            // Play game over sound
+            // audioController.gameOver(); 
+
+            // navigate to gameover screen
+            navigation.navigate("GameOver")
+        }
+    }, [timeRemaining, totalFlips]);
+
+
+    // VICTORY
+    useEffect(() => {
+
+        // Check for victory condition
+        if (matchedCards.length === cardImagesArray.length) {
+
+            console.log('You win!');
+
+            // Play victory sound
+            // audioController.victory(); 
+
+            // navigate to victory screen
+            navigation.navigate("Victory")
+        }
+    }, [matchedCards]);
 
 
 
@@ -175,6 +195,7 @@ const GameLogic = ({ route }) => {
     const resetTurn = () => {
         setFirstCard(null)
         setSecondCard(null)
+        setDisabled(false)
     }
 
 
@@ -191,7 +212,7 @@ const GameLogic = ({ route }) => {
 
     const shuffleCards = () => {
 
-        const shuffledCards = [...cardsArray, ...cardsArray]
+        const shuffledCards = [...cardImagesArray, ...cardImagesArray]
             .sort(() => Math.random() - 0.5)
             .map((card) => ({ ...card, id: Math.random(), spin: 0 }))
 
@@ -201,67 +222,24 @@ const GameLogic = ({ route }) => {
 
     const flipCard = (card) => {
 
-        // Check if the card can be flipped based on game conditions
-        // if (canFlipCard(cardId)) {
-        // }    
+        if (!disabled && card.spin === 0) {
 
-        //     // Play flip sound
-        //     // audioController.flip();
+            // Play flip sound
+            // audioController.flip();
 
-
-        if (!card.matched && card.spin === 0) {
+            // Flip card
             const updatedCards = cards.map((c) =>
-              c.id === card.id ? { ...c, spin: 1 } : c
+                c.id === card.id ? { ...c, spin: 1 } : c
             );
+
             setCards(updatedCards);
+
+            //
+            firstCard ? setSecondCard(card) : setFirstCard(card)
+
+            setTotalFlips(prevState => prevState + 1)
         }
-        
-        firstCard ? setSecondCard(card) : setFirstCard(card)
-
-        setTotalFlips(prevState => prevState + 1)
-
-        // Check for 'hard' level and total clicks exceeding 16
-        // if (level === 'hard' && totalFlips > 16) {
-
-        //     // End the game
-        //     console.log('gameover')
-        //     gameOver();
-        // }
     };
-
-
-    // const canFlipCard = (card) => {
-
-    //     // Check if the game is not busy, card is not matched, and fewer than 2 cards are selected
-    //     return (
-    //         !busy &&                   // Game should not be busy with animations
-    //         !matchedCards.includes(cardId) && // Card should not be already matched
-    //         !selectedCards.includes(cardId) && // Card should not be already selected
-    //         selectedCards.length < 2   // No more than 2 cards can be selected
-    //     );
-    // }
-
-
-    // const gameOver = () => {
-
-    //     // Play game over sound
-    //     // audioController.gameOver(); 
-
-    //     // Update state to show game over screen
-    //     setGameState(prevState => ({ ...prevState, gameOverVisible: true }));
-    // }
-
-
-    // const victory = () => {
-
-    //     // Play victory sound
-    //     // audioController.victory(); 
-
-    //     // Update state to show victory screen
-    //     setGameState(prevState => ({ ...prevState, victoryVisible: true }));
-    // }
-
-    
 
 
 
@@ -286,12 +264,6 @@ const GameLogic = ({ route }) => {
                     </View>
                 ))}
             </View>
-
-            {/* Render game over screen */}
-            {/* {gameOverVisible && <GameOverScreen />} */}
-
-            {/* Render victory screen */}
-            {/* {victoryVisible && <VictoryScreen />} */}
         </View>
     )
 };
