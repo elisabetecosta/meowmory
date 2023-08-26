@@ -1,58 +1,92 @@
-// import Sound from "react-native-sound"
+import { Audio } from "expo-av"
+
+import bgMusic from '../../assets/audio/music.mp3'
+import flipSound from '../../assets/audio/flip.wav'
+import matchSound from '../../assets/audio/match.wav'
+import victorySound from '../../assets/audio/victory.wav'
+import gameOverSound from '../../assets/audio/gameover.wav'
+
 
 class AudioController {
-    
+
     constructor() {
-        
-        Sound.setCategory('Playback'); // Set audio category for background playback
 
-        this.bgMusic = new Sound('../../assets/audio/music.mp3', Sound.MAIN_BUNDLE, (error) => {
-            if (error) {
-                console.log('Error loading background music:', error);
-            }
-        });
-
-        this.bgMusic.setVolume(0.5);
-        this.bgMusic.setNumberOfLoops(-1); // Infinite loop
-
-        this.flipSound = new Sound('../../assets/audio/flip.wav', Sound.MAIN_BUNDLE);
-        this.matchSound = new Sound('../../assets/audio/match.wav', Sound.MAIN_BUNDLE);
-        this.victorySound = new Sound('../../assets/audio/victory.wav', Sound.MAIN_BUNDLE);
-        this.gameOverSound = new Sound('../../assets/audio/gameover.wav', Sound.MAIN_BUNDLE);
+        this.bgMusic = new Audio.Sound()
+        this.flipSound = new Audio.Sound()
+        this.matchSound = new Audio.Sound()
+        this.victorySound = new Audio.Sound()
+        this.gameOverSound = new Audio.Sound()
     }
 
-    // Start playing background music
-    startMusic = () => {
-        this.bgMusic.play();
+    
+    loadAndPlay = async (audioObject, audioFile, loop = false, volume = 1.0) => {
+
+        try {
+            await audioObject.loadAsync(audioFile);
+            audioObject.setIsLoopingAsync(loop);
+            audioObject.setVolumeAsync(volume);
+            await audioObject
+                .playAsync()
+                .then(async playbackStatus => {
+
+                    if (!loop) {
+                        setTimeout(() => {
+                            audioObject.unloadAsync()
+                        }, playbackStatus.playableDurationMillis)
+                    }
+
+
+                })
+                .catch(error => {
+                    console.log(error)
+                })
+
+        } catch (error) {
+            console.log(error);
+        }
     }
 
-    // Stop playing background music and reset to the beginning
-    stopMusic = () => {
-        this.bgMusic.pause();
-        this.bgMusic.currentTime = 0;
+
+    playBgMusic = async () => {
+        await this.loadAndPlay(this.bgMusic, bgMusic, true, 0.5); // Loop and set the volume to 50%
     }
 
-    // Play flip sound
-    flip = () => {
-        this.flipSound.play();
+
+    stopBgMusic = async () => {
+        try {
+            console.log("stopping background music")
+            await this.bgMusic.stopAsync();
+            await this.bgMusic.unloadAsync();
+        } catch (error) {
+            console.log(error);
+        }
     }
 
-    // Play match sound
-    match = () => {
-        this.matchSound.play();
+    unloadBgMusic = async () => {
+        try {
+            console.log("cleaning up background music")
+            await this.bgMusic.unloadAsync();
+        } catch (error) {
+            console.log(error);
+        }
     }
 
-    // Play victory sound and stop background music
-    victory = () => {
-        this.stopMusic();
-        this.victorySound.play();
+    playFlipSound = async () => {
+        await this.loadAndPlay(this.flipSound, flipSound);
     }
 
-    // Play game over sound and stop background music
-    gameOver = () => {
-        this.stopMusic();
-        this.gameOverSound.play();
+    playMatchSound = async () => {
+        await this.loadAndPlay(this.matchSound, matchSound);
+    }
+
+    playVictorySound = async () => {
+        await this.loadAndPlay(this.victorySound, victorySound);
+    }
+
+    playGameOverSound = async () => {
+        await this.loadAndPlay(this.gameOverSound, gameOverSound);
     }
 }
+
 
 export default AudioController

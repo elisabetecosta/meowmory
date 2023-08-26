@@ -28,7 +28,7 @@ const StackComponent = () => {
                         headerStyle: { backgroundColor: COLORS.primary },
                         headerShadowVisible: false,
                         headerLeft: () => (
-                            <ScreenHeaderBtn iconUrl={icons.menu} dimension="60%" />
+                            <ScreenHeaderBtn iconUrl={icons.home} dimension="60%" />
                         ),
                         headerRight: () => (
                             <ScreenHeaderBtn iconUrl={icons.share} dimension="60%" />

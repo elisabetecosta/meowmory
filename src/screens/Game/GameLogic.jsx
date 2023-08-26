@@ -1,19 +1,21 @@
 // TODO 
-// - add audio effects 
+// - see if I can have the animation look better while keeping the logic working (https://geekyants.com/blog/how-to-build-simple-card-flip-animation-in-react-native-using-reanimated-v2/)
 // - do as much refactoring as possible without making the code stop working
+// - remove old and unnecessary code and dependencies and run npm install
 // - add detailed comments
 // - improve styling of the component
-// - remove old and unnecessary code
 // - create a component that has a title, text and button and that can be reused for the rules, victory and gameover screens
 
 
 import React, { useState, useEffect } from 'react';
-import { useNavigation } from '@react-navigation/native'
 import { View, Text, Image } from "react-native"
+import { useNavigation } from '@react-navigation/native'
 import Animated, { interpolate } from "react-native-reanimated";
 
+import usePreventBackNavigation from "../../hooks/usePreventBackNavigation"
 import AudioController from '../../utils/AudioController'
 import cardImages from "../../constants/images"
+
 import styles from "./GameScreen.style"
 
 
@@ -22,9 +24,11 @@ const GameLogic = ({ route }) => {
 
     const { level } = route.params
 
+    const audioController = new AudioController()
+
     const navigation = useNavigation()
 
-    // const audioController = new AudioController()
+    usePreventBackNavigation()
 
     const cardImagesArray = [
         { name: 'card-01', path: cardImages.card01 },
@@ -49,22 +53,35 @@ const GameLogic = ({ route }) => {
 
     //
     const [timeRemaining, setTimeRemaining] = useState(100)
+    const [countdown, setCountdown] = useState(timeRemaining);
     const [totalFlips, setTotalFlips] = useState(0)
     const [cards, setCards] = useState([])
     const [firstCard, setFirstCard] = useState(null)
     const [secondCard, setSecondCard] = useState(null)
     const [matchedCards, setMatchedCards] = useState([])
     const [disabled, setDisabled] = useState(false)
-    const [countdown, setCountdown] = useState(timeRemaining);
+    const [gameOver, setGameOver] = useState(false)
 
 
     // START GAME
     useEffect(() => {
 
-        // audioController.startMusic()
-        resetTurn()
-        setTimer(level)
-        shuffleCards()
+        const onFocus = navigation.addListener('focus', () => {
+            audioController.playBgMusic()
+            resetTurn()
+            setTimer(level)
+            shuffleCards()
+        });
+
+        const onBlur = navigation.addListener('blur', () => {
+            audioController.stopBgMusic()
+        });
+
+        return () => {
+            onFocus()
+            onBlur()
+        }
+
     }, []);
 
 
@@ -73,18 +90,24 @@ const GameLogic = ({ route }) => {
 
         const countdownInterval = setInterval(() => {
 
-            if (timeRemaining > 0) {
-                setTimeRemaining(prevState => prevState - 1)
-            } else {
-                clearInterval(countdownInterval);
-                console.log('Countdown reached 0');
+            if (!gameOver) {
+
+                if (timeRemaining > 0) {
+                    setTimeRemaining(prevState => prevState - 1)
+                } else {
+                    clearInterval(countdownInterval);
+                    console.log('Countdown reached 0');
+
+                    handleGameOver()
+                }
             }
-        }, 1000);
+        }, 1000)
 
         return () => {
             clearInterval(countdownInterval);
+            console.log("Timer clean up")
         };
-    }, [timeRemaining]);
+    }, [gameOver, timeRemaining]);
 
 
     //CARD COMPARISON
@@ -96,21 +119,9 @@ const GameLogic = ({ route }) => {
 
             if (firstCard.name === secondCard.name) {
 
-                // audioController.match();
+                audioController.playMatchSound()
 
                 console.log("MATCH")
-
-                // setCards(prevCards => {
-
-                //     return prevCards.map(card => {
-
-                //         if (card.name === firstCard.name) {
-                //             return { ...card }
-                //         } else {
-                //             return card
-                //         }
-                //     })
-                // })
 
                 setMatchedCards(prevMatchedCards => [...prevMatchedCards, firstCard.name])
 
@@ -152,24 +163,27 @@ const GameLogic = ({ route }) => {
                 }, 500)
             }
         }
+
+        return () => {
+            console.log("Card comparison cleanup executed")
+        }
     }, [firstCard, secondCard])
 
 
-    // GAME OVER
+    // HARD LEVEL GAME OVER
     useEffect(() => {
 
         // Check for 'hard' level and total clicks exceeding 16
-        if (timeRemaining === 0 || level === 'hard' && totalFlips > 16) {
+        if (level === 'hard' && totalFlips > 16) {
 
-            console.log("Game Over")
-
-            // Play game over sound
-            // audioController.gameOver(); 
-
-            // navigate to gameover screen
-            navigation.navigate("GameOver")
+            handleGameOver()
         }
-    }, [timeRemaining, totalFlips]);
+
+        // Return the cleanup function
+        return () => {
+            console.log("Game Over cleanup executed");
+        }
+    }, [totalFlips]);
 
 
     // VICTORY
@@ -178,13 +192,7 @@ const GameLogic = ({ route }) => {
         // Check for victory condition
         if (matchedCards.length === cardImagesArray.length) {
 
-            console.log('You win!');
-
-            // Play victory sound
-            // audioController.victory(); 
-
-            // navigate to victory screen
-            navigation.navigate("Victory")
+            handleVictory()
         }
     }, [matchedCards]);
 
@@ -200,6 +208,7 @@ const GameLogic = ({ route }) => {
 
 
     const setTimer = (level) => {
+
         let timeRemaining = 0;
 
         if (level === 'easy') timeRemaining = 100;
@@ -225,7 +234,7 @@ const GameLogic = ({ route }) => {
         if (!disabled && card.spin === 0) {
 
             // Play flip sound
-            // audioController.flip();
+            audioController.playFlipSound();
 
             // Flip card
             const updatedCards = cards.map((c) =>
@@ -240,6 +249,28 @@ const GameLogic = ({ route }) => {
             setTotalFlips(prevState => prevState + 1)
         }
     };
+
+
+    const handleGameOver = () => {
+
+        console.log("Game Over")
+
+        setGameOver(true)
+
+        // navigate to gameover screen
+        navigation.navigate("GameOver")
+    }
+
+
+    const handleVictory = () => {
+
+        console.log("Victory")
+
+        setGameOver(true)
+
+        // navigate to victory screen
+        navigation.navigate("Victory")
+    }
 
 
 
