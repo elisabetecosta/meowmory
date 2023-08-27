@@ -1,6 +1,6 @@
 // TODO 
-// - see if I can have the animation look better while keeping the logic working (https://geekyants.com/blog/how-to-build-simple-card-flip-animation-in-react-native-using-reanimated-v2/)
-// - do as much refactoring as possible without making the code stop working
+// - do as much refactoring as possible without making the code stop working:
+//  (timer component, checkmatch function, initialize game function, create a gamelogic.js in utils)
 // - remove old and unnecessary code and dependencies and run npm install
 // - add detailed comments
 // - improve styling of the component
@@ -8,13 +8,15 @@
 
 
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image } from "react-native"
+import { View, Text } from "react-native"
 import { useNavigation } from '@react-navigation/native'
-import Animated, { interpolate } from "react-native-reanimated";
+import { useSharedValue } from "react-native-reanimated";
 
 import usePreventBackNavigation from "../../hooks/usePreventBackNavigation"
 import AudioController from '../../utils/AudioController'
 import cardImages from "../../constants/images"
+
+import Card from "../../components/Card/Card"
 
 import styles from "./GameScreen.style"
 
@@ -39,19 +41,19 @@ const GameLogic = ({ route }) => {
         { name: 'card-06', path: cardImages.card06 },
     ]
 
-
+    const duplicatedcardImagesArray = [...cardImagesArray, ...cardImagesArray]
+    
+    
     // Animation Logic
-    const AnimatedStyle = (spin, side) => {
+    const animatedValues = duplicatedcardImagesArray.map(() => useSharedValue(0))
 
-        const spinVal = interpolate(spin, [0, 1], side === 'front' ? [180, 0] : [360, 180]);
-
-        return {
-            transform: [{ rotateY: `${spinVal}deg` }],
-        };
-    }
+    const animatedCards = duplicatedcardImagesArray.map((card, index) => ({
+        ...card,
+        animatedValue: animatedValues[index],
+    }))
 
 
-    //
+    
     const [timeRemaining, setTimeRemaining] = useState(100)
     const [countdown, setCountdown] = useState(timeRemaining);
     const [totalFlips, setTotalFlips] = useState(0)
@@ -134,30 +136,8 @@ const GameLogic = ({ route }) => {
 
                 setTimeout(() => {
 
-                    // Reset the spin value of the non-matching cards
-                    setCards(prevCards => {
-
-                        return prevCards.map(card => {
-
-                            if (card.name === firstCard.name) {
-                                return { ...card, spin: 0 }
-                            } else {
-                                return card
-                            }
-                        })
-                    })
-
-                    setCards(prevCards => {
-
-                        return prevCards.map(card => {
-
-                            if (card.name === secondCard.name) {
-                                return { ...card, spin: 0 }
-                            } else {
-                                return card
-                            }
-                        })
-                    })
+                    firstCard.animatedValue.value = 0
+                    secondCard.animatedValue.value = 0
 
                     resetTurn()
                 }, 500)
@@ -221,9 +201,9 @@ const GameLogic = ({ route }) => {
 
     const shuffleCards = () => {
 
-        const shuffledCards = [...cardImagesArray, ...cardImagesArray]
+        const shuffledCards = animatedCards
             .sort(() => Math.random() - 0.5)
-            .map((card) => ({ ...card, id: Math.random(), spin: 0 }))
+            .map((card) => ({ ...card, id: Math.random() }))
 
         setCards(shuffledCards)
     };
@@ -231,23 +211,15 @@ const GameLogic = ({ route }) => {
 
     const flipCard = (card) => {
 
-        if (!disabled && card.spin === 0) {
+        // Play flip sound
+        audioController.playFlipSound();
 
-            // Play flip sound
-            audioController.playFlipSound();
+        // Flip card
+        card.animatedValue.value = 1
 
-            // Flip card
-            const updatedCards = cards.map((c) =>
-                c.id === card.id ? { ...c, spin: 1 } : c
-            );
+        firstCard ? setSecondCard(card) : setFirstCard(card)
 
-            setCards(updatedCards);
-
-            //
-            firstCard ? setSecondCard(card) : setFirstCard(card)
-
-            setTotalFlips(prevState => prevState + 1)
-        }
+        setTotalFlips(prevState => prevState + 1)
     };
 
 
@@ -285,14 +257,12 @@ const GameLogic = ({ route }) => {
             <View style={styles.cardContainer}>
                 {cards.map(card => (
 
-                    <View key={card.id} onTouchEnd={() => flipCard(card)}>
-                        <Animated.View style={[styles.cardFront, AnimatedStyle(card.spin, 'front')]}>
-                            <Image source={card.path} style={styles.cardImage} />
-                        </Animated.View>
-                        <Animated.View style={[styles.cardBack, AnimatedStyle(card.spin, 'back')]}>
-                            <Image source={cardImages.cardBack} style={styles.cardImage} />
-                        </Animated.View>
-                    </View>
+                    <Card 
+                        key={card.id}
+                        card={card}
+                        disabled={disabled}
+                        onCardPress={() => flipCard(card)} 
+                    />
                 ))}
             </View>
         </View>
