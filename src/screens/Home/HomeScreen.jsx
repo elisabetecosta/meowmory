@@ -4,10 +4,10 @@ import { View, Text, Image } from 'react-native'
 
 import Button from "../../components/Button/Button"
 import cat from "../../../assets/images/card-back.png"
-import styles from './WelcomeScreen.style'
+import styles from './HomeScreen.style'
 
 
-const WelcomeScreen = () => {
+const HomeScreen = () => {
 
   const navigation = useNavigation()
 
@@ -30,4 +30,4 @@ const WelcomeScreen = () => {
   )
 }
 
-export default WelcomeScreen
+export default HomeScreen

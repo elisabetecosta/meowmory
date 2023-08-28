@@ -1,16 +1,15 @@
 import React from "react"
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { useNavigation } from '@react-navigation/native'
 
 import { COLORS, icons } from "../constants"
 
 //import components that will show in the home page
 import ScreenHeaderBtn from "../components/Header/ScreenHeaderBtn"
-import WelcomeScreen from "../screens/Home/WelcomeScreen"
+import HomeScreen from "../screens/Home/HomeScreen"
 import RulesScreen from "../screens/Rules/RulesScreen"
 import LevelSelectionScreen from "../screens/Levels/LevelSelectionScreen"
-import GameLogic from "../screens/Game/GameLogic"
+import GameScreen from "../screens/Game/GameScreen"
 import VictoryScreen from "../screens/Victory/VictoryScreen"
 import GameOverScreen from "../screens/GameOver/GameOverScreen"
 
@@ -20,23 +19,28 @@ const StackComponent = () => {
 
     return (
         <NavigationContainer>
+
+            {/* Navigator for creating a stack of screens */}
             <Stack.Navigator initialRouteName="Home">
+
+                {/* Home screen */}
                 <Stack.Screen
                     name="Home"
-                    component={WelcomeScreen}
+                    component={HomeScreen}
                     options={{
                         headerStyle: { backgroundColor: COLORS.primary },
                         headerShadowVisible: false,
                         headerLeft: () => (
-                            <ScreenHeaderBtn iconUrl={icons.home} dimension="60%" />
+                            <ScreenHeaderBtn iconUrl={icons.home} dimension="60%" screen="Rules" />
                         ),
                         headerRight: () => (
-                            <ScreenHeaderBtn iconUrl={icons.share} dimension="60%" />
+                            <ScreenHeaderBtn iconUrl={icons.share} dimension="60%" screen="Levels" />
                         ),
                         headerTitle: ""
                     }}
                 />
 
+                {/* Rules screen */}
                 <Stack.Screen
                     name="Rules"
                     component={RulesScreen}
@@ -47,6 +51,7 @@ const StackComponent = () => {
                     }}
                 />
 
+                {/* Level selection screen */}
                 <Stack.Screen
                     name="Levels"
                     component={LevelSelectionScreen}
@@ -57,9 +62,10 @@ const StackComponent = () => {
                     }}
                 />
 
+                {/* Game screen */}
                 <Stack.Screen
                     name="Game"
-                    component={GameLogic}
+                    component={GameScreen}
                     options={({ route }) => ({
                         headerStyle: { backgroundColor: COLORS.primary },
                         headerShadowVisible: false,
@@ -68,6 +74,7 @@ const StackComponent = () => {
                     })}
                 />
 
+                {/* Victory screen */}
                 <Stack.Screen
                     name="Victory"
                     component={VictoryScreen}
@@ -78,6 +85,7 @@ const StackComponent = () => {
                     }}
                 />
 
+                {/* Game over screen */}
                 <Stack.Screen
                     name="GameOver"
                     component={GameOverScreen}
