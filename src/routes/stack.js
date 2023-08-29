@@ -4,9 +4,9 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import { COLORS, icons } from "../constants"
 
-//import components that will show in the home page
 import ScreenHeaderBtn from "../components/Header/ScreenHeaderBtn"
 import HomeScreen from "../screens/Home/HomeScreen"
+import ShopScreen from "../screens/Shop/ShopScreen"
 import RulesScreen from "../screens/Rules/RulesScreen"
 import LevelSelectionScreen from "../screens/Levels/LevelSelectionScreen"
 import GameScreen from "../screens/Game/GameScreen"
@@ -30,13 +30,26 @@ const StackComponent = () => {
                     options={{
                         headerStyle: { backgroundColor: COLORS.primary },
                         headerShadowVisible: false,
-                        headerLeft: () => (
-                            <ScreenHeaderBtn iconUrl={icons.home} dimension="60%" screen="Rules" />
-                        ),
+                        headerTitle: "",
+                        headerLeft: () => <></>,
                         headerRight: () => (
-                            <ScreenHeaderBtn iconUrl={icons.share} dimension="60%" screen="Levels" />
+                            <ScreenHeaderBtn iconUrl={icons.shop} dimension="100%" screen="Shop" />
                         ),
-                        headerTitle: ""
+                    }}
+                />
+
+                {/* Shop screen */}
+                <Stack.Screen
+                    name="Shop"
+                    component={ShopScreen}
+                    options={{
+                        headerStyle: { backgroundColor: COLORS.primary },
+                        headerShadowVisible: false,
+                        headerTitle: "",
+                        headerLeft: () => <></>,
+                        headerRight: () => (
+                            <ScreenHeaderBtn iconUrl={icons.close} dimension="60%" screen="Home" />
+                        ),
                     }}
                 />
 
@@ -47,7 +60,11 @@ const StackComponent = () => {
                     options={{
                         headerStyle: { backgroundColor: COLORS.primary },
                         headerShadowVisible: false,
-                        headerTitle: ""
+                        headerTitle: "",
+                        headerLeft: () => <></>,
+                        headerRight: () => (
+                            <ScreenHeaderBtn iconUrl={icons.close} dimension="60%" screen="Home" />
+                        ),
                     }}
                 />
 
@@ -58,7 +75,11 @@ const StackComponent = () => {
                     options={{
                         headerStyle: { backgroundColor: COLORS.primary },
                         headerShadowVisible: false,
-                        headerTitle: ""
+                        headerTitle: "",
+                        headerLeft: () => <></>,
+                        headerRight: () => (
+                            <ScreenHeaderBtn iconUrl={icons.close} dimension="60%" screen="Home" />
+                        ),
                     }}
                 />
 
@@ -70,7 +91,11 @@ const StackComponent = () => {
                         headerStyle: { backgroundColor: COLORS.primary },
                         headerShadowVisible: false,
                         headerTitle: "",
-                        params: { level: route.params?.level }
+                        params: { level: route.params?.level },
+                        headerLeft: () => <></>,
+                        headerRight: () => (
+                            <ScreenHeaderBtn iconUrl={icons.settings} dimension="60%" screen="Home" />
+                        ),
                     })}
                 />
 
@@ -81,7 +106,13 @@ const StackComponent = () => {
                     options={{
                         headerStyle: { backgroundColor: COLORS.primary },
                         headerShadowVisible: false,
-                        headerTitle: ""
+                        headerTitle: "",
+                        headerLeft: () => (
+                            <ScreenHeaderBtn iconUrl={icons.home} dimension="90%" screen="Home" />
+                        ),
+                        headerRight: () => (
+                            <ScreenHeaderBtn iconUrl={icons.shop} dimension="100%" screen="Shop" />
+                        ),
                     }}
                 />
 
@@ -92,7 +123,13 @@ const StackComponent = () => {
                     options={{
                         headerStyle: { backgroundColor: COLORS.primary },
                         headerShadowVisible: false,
-                        headerTitle: ""
+                        headerTitle: "",
+                        headerLeft: () => (
+                            <ScreenHeaderBtn iconUrl={icons.home} dimension="90%" screen="Home" />
+                        ),
+                        headerRight: () => (
+                            <ScreenHeaderBtn iconUrl={icons.shop} dimension="100%" screen="Shop" />
+                        ),
                     }}
                 />
             </Stack.Navigator>

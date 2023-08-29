@@ -4,29 +4,22 @@ import { COLORS, FONT, SIZES } from "../../constants"
 
 const styles = StyleSheet.create({
   container: {
-    width: "100%",
     flex: 1,
     alignItems: "center",
     backgroundColor: COLORS.primary,
-  },
-
-  title: {
-    fontFamily: FONT.special,
-    fontSize: SIZES.xxxLarge,
-    color: COLORS.light,
-    marginTop: 50,
-    marginBottom: 50,
+    paddingTop: 25,
   },
 
   image: {
-    height: 75,
-    width: 50,
+    height: "50%",
+    width: "50%",
+    resizeMode: "contain",
   },
 
   wrapper: {
     flex: 1,  
     alignItems: "center",
-    marginTop: 50,
+    marginTop: 25,
   },
 })
 

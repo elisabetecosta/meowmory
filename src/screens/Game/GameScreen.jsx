@@ -1,6 +1,6 @@
 // TODO 
-// - improve styling of the component
-// - create a component that has a title, text and button and that can be reused for the rules, victory and gameover screens
+// - music is only stopping if the game ends, not when I navigate to a different screen, same thing with timer
+// - phone wallpaper dimensions: 1080 width/1920 height 
 
 
 import React, { useState, useEffect } from 'react';
@@ -13,7 +13,10 @@ import { handleCardComparison, handleVictory, handleGameOver } from "../../utils
 import AudioController from '../../utils/AudioController'
 import cardImages from "../../constants/images"
 
-import GameUI from './GameUI';
+import { SafeAreaView, View, Text } from "react-native"
+
+import Card from "../../components/Card/Card"
+import styles from "./GameScreen.style"
 
 
 // Array containing the images for the front of the cards
@@ -58,7 +61,7 @@ const GameScreen = ({ route }) => {
 
 
     // State variables to track game progress and state
-    const [timeRemaining, setTimeRemaining] = useState(100)
+    const [timeRemaining, setTimeRemaining] = useState(60)
     const [totalFlips, setTotalFlips] = useState(0)
     const [cards, setCards] = useState([])
     const [firstCard, setFirstCard] = useState(null)
@@ -167,8 +170,8 @@ const GameScreen = ({ route }) => {
 
         let timeRemaining = 0;
 
-        if (level === 'easy') timeRemaining = 100;
-        if (level === 'medium') timeRemaining = 60;
+        if (level === 'easy') timeRemaining = 60;
+        if (level === 'medium') timeRemaining = 45;
         if (level === 'hard') timeRemaining = 30;
 
         setTimeRemaining(timeRemaining)
@@ -206,16 +209,37 @@ const GameScreen = ({ route }) => {
         // Update the total flips count by incrementing the previous state value
         setTotalFlips(prevState => prevState + 1)
     };
-    
+
 
     return (
-        <GameUI
-            cards={cards}
-            timeRemaining={timeRemaining}
-            totalFlips={totalFlips}
-            disabled={disabled}
-            onCardPress={handleCardPress}
-        />
+        // <GameUI
+        //     cards={cards}
+        //     timeRemaining={timeRemaining}
+        //     totalFlips={totalFlips}
+        //     disabled={disabled}
+        //     onCardPress={handleCardPress}
+        // />
+        <SafeAreaView style={styles.container}>
+
+            {/* Render game info */}
+            <View style={styles.gameInfoContainer}>
+                <Text style={styles.gameInfoText}>Time: {timeRemaining}</Text>
+                <Text style={styles.gameInfoText}>Flips: {totalFlips}</Text>
+            </View>
+
+            {/* Render game board with all the cards */}
+            <View style={styles.cardsContainer}>
+                {cards.map(card => (
+
+                    <Card
+                        key={card.id}
+                        card={card}
+                        disabled={disabled}
+                        onCardPress={() => handleCardPress(card)}
+                    />
+                ))}
+            </View>
+        </SafeAreaView>
     )
 };
 

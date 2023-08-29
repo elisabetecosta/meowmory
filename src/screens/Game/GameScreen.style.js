@@ -4,31 +4,32 @@ import { COLORS, FONT, SIZES } from "../../constants"
 
 const styles = StyleSheet.create({
   container: {
-    width: "100%",
     flex: 1,
     backgroundColor: COLORS.secondary,
   },
 
   gameInfoContainer: {
     flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: 20
+    justifyContent: 'space-around',
+    backgroundColor: COLORS.primary,
+    paddingBottom: 5,
+    elevation: 3
   },
 
-  gameInfo: {
-    fontFamily: FONT.bold,
-    fontSize: SIZES.large,
-    color: "#fff",
-    marginRight: 20
+  gameInfoText: {
+    fontFamily: FONT.special,
+    fontSize: SIZES.xxLarge,
+    color: COLORS.light,
+    paddingHorizontal: 5
   },
 
-  cardContainer: {
+  cardsContainer: {
     flex: 1,
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
     alignContent: 'center',
-    // backgroundColor: "#fff",
+
     marginBottom: 20,
     marginHorizontal: 20,
   },
