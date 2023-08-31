@@ -62,4 +62,4 @@ Follow these steps to test the app on your local machine.
 Feel free to contribute to this project! You can open issues for bugs or suggestions and submit pull requests to improve the app.
 
 ## License
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/elisabetecosta/meowmery/blob/65211b015ce69bef46a3e49ab8181c5a64bc2ae7/LICENSE.txt) file for details.
