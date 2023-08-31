@@ -1,5 +1,6 @@
 // TODO 
-// - music is only stopping if the game ends, not when I navigate to a different screen, same thing with timer
+// - music is only stopping if the game ends, not when I navigate to a different screen, temporary solution was to stop the user from being able to navigate way from the game screen
+// - implement settings button with options to pause the game, mute the sound, go to the home screen, restart game (same level) or exit the app
 // - phone wallpaper dimensions: 1080 width/1920 height 
 
 

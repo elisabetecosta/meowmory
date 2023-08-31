@@ -93,9 +93,9 @@ const StackComponent = () => {
                         headerTitle: "",
                         params: { level: route.params?.level },
                         headerLeft: () => <></>,
-                        headerRight: () => (
-                            <ScreenHeaderBtn iconUrl={icons.settings} dimension="60%" screen="Home" />
-                        ),
+                        // headerRight: () => (
+                        //     <ScreenHeaderBtn iconUrl={icons.settings} dimension="60%" screen="Home" />
+                        // ),
                     })}
                 />
 
