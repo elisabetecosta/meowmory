@@ -22,7 +22,7 @@ Follow these steps to test the app on your local machine.
 2. Navigate to the project directory:
 
     ```bash
-    cd meowmery
+    cd meowmory
 
 3. Install the dependencies:
 
