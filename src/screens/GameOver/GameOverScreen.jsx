@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { SafeAreaView, StyleSheet } from "react-native"
+import { View, StyleSheet } from "react-native"
 import { useNavigation } from '@react-navigation/native'
 
 import usePreventBackNavigation from "../../hooks/usePreventBackNavigation"
@@ -25,14 +25,14 @@ const GameOverScreen = () => {
     }, []);
 
     return (
-        <SafeAreaView style={styles.container} >
+        <View style={styles.container} >
             <Title text="Game Over" />
             <Button
                 text="Play Again"
                 theme="default"
                 handlePress={() => navigation.navigate("Levels")}
             />
-        </SafeAreaView>
+        </View>
     )
 }
 

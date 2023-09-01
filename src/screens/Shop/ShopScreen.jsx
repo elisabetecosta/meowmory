@@ -1,13 +1,13 @@
-import { StyleSheet, SafeAreaView, ScrollView, Text } from "react-native"
+import { StyleSheet, View, ScrollView, Text } from "react-native"
 
 import { COLORS, FONT, SIZES } from "../../constants"
 
 const ShopScreen = () => {
 
     return (
-        <SafeAreaView style={styles.container} >
+        <View style={styles.container} >
             <Text style={styles.text}>working on it</Text>
-        </SafeAreaView>
+        </View>
     )
 }
 

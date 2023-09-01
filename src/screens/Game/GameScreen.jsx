@@ -14,7 +14,7 @@ import { handleCardComparison, handleVictory, handleGameOver } from "../../utils
 import AudioController from '../../utils/AudioController'
 import cardImages from "../../constants/images"
 
-import { SafeAreaView, View, Text } from "react-native"
+import { View, Text } from "react-native"
 
 import Card from "../../components/Card/Card"
 import styles from "./GameScreen.style"
@@ -220,7 +220,7 @@ const GameScreen = ({ route }) => {
         //     disabled={disabled}
         //     onCardPress={handleCardPress}
         // />
-        <SafeAreaView style={styles.container}>
+        <View style={styles.container}>
 
             {/* Render game info */}
             <View style={styles.gameInfoContainer}>
@@ -240,7 +240,7 @@ const GameScreen = ({ route }) => {
                     />
                 ))}
             </View>
-        </SafeAreaView>
+        </View>
     )
 };
 

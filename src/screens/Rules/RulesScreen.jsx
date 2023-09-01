@@ -1,4 +1,4 @@
-import { StyleSheet, SafeAreaView, ScrollView, View, Text } from "react-native"
+import { StyleSheet, View, ScrollView, Text } from "react-native"
 
 import Title from "../../components/Title/Title"
 
@@ -8,7 +8,7 @@ import { COLORS, FONT, SIZES } from "../../constants"
 const RulesScreen = () => {
 
     return (
-        <SafeAreaView style={styles.container} >
+        <View style={styles.container} >
             <Title text="How to play" />
 
             <ScrollView style={styles.textContainer}>
@@ -40,7 +40,7 @@ const RulesScreen = () => {
                 <Text style={styles.text}>- 16 flips {'\n'}</Text>
 
             </ScrollView>
-        </SafeAreaView>
+        </View>
     )
 }
 

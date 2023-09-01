@@ -1,5 +1,5 @@
 import React from "react"
-import { SafeAreaView, StyleSheet } from "react-native"
+import { View, StyleSheet } from "react-native"
 
 // Imports necessary to implement custom fonts
 import { useCallback } from "react"
@@ -29,9 +29,9 @@ const App = () => {
 
     return (
 
-        <SafeAreaView style={styles.container}>
+        <View style={styles.container}>
             <StackComponent onLayout={onLayoutRootView} />
-        </SafeAreaView>
+        </View>
     )
 }
 
@@ -39,7 +39,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: COLORS.primary,
-        width: "100%",
     },
 })
 

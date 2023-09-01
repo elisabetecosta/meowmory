@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, SafeAreaView, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Button from '../../components/Button/Button';
 
@@ -16,14 +16,14 @@ const LevelSelectionScreen = () => {
     };
 
     return (
-        <SafeAreaView style={styles.container}>
+        <View style={styles.container}>
             <Title text="LEVEL SELECTION" />
             <View style={styles.wrapper} >
                 <Button text="Easy" theme="easy" handlePress={() => handleLevelSelection('easy')} />
                 <Button text="Medium" theme="medium" handlePress={() => handleLevelSelection('medium')} />
                 <Button text="Hard" theme="hard" handlePress={() => handleLevelSelection('hard')} />
             </View>
-        </SafeAreaView>
+        </View>
     );
 };
 

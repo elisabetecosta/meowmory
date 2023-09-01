@@ -1,6 +1,6 @@
 import React from 'react'
 import { useNavigation } from '@react-navigation/native'
-import { View, Text, Image } from 'react-native'
+import { View, Image } from 'react-native'
 
 import Button from "../../components/Button/Button"
 import cat from "../../../assets/images/cat.png"
@@ -14,7 +14,6 @@ const HomeScreen = () => {
 
   return (
     <View style={styles.container}>
-      {/* <Text style={styles.title}>Meowmery</Text> */}
       <Title text="Meowmery" />
       <Image style={styles.image} source={cat}></Image>
 
