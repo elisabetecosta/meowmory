@@ -14,7 +14,7 @@ const HomeScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Title text="Meowmery" />
+      <Title text="Meowmory" />
       <Image style={styles.image} source={cat}></Image>
 
       <View style={styles.wrapper}>
