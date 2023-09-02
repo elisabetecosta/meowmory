@@ -1,0 +1,4 @@
+- add a home/close icon that match in design
+- see if I can resolve elevation rotating together with cards
+- instead of buttons, on the level screen had cat images, easy - cat sleeping, medium - cat playing, hard - cat lifting weights or studying
+- change the name of the repository, package, app, to start with a capital M, delete eas and start build from scratch

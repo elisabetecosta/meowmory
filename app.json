@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "meowmery",
-    "slug": "meowmery",
+    "name": "meowmory",
+    "slug": "meowmory",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -22,21 +22,21 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.ecosta94.meowmery"
+      "package": "com.themeowseries.meowmory"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "extra": {
       "eas": {
-        "projectId": "f7dfa5c4-307a-47ff-a5b6-1f46a82927e5"
+        "projectId": "6350078f-23e0-424a-96b8-70a71d89b97f"
       }
     },
     "runtimeVersion": {
       "policy": "appVersion"
     },
     "updates": {
-      "url": "https://u.expo.dev/f7dfa5c4-307a-47ff-a5b6-1f46a82927e5"
+      "url": "https://u.expo.dev/6350078f-23e0-424a-96b8-70a71d89b97f"
     }
   }
 }

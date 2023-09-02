@@ -46,10 +46,12 @@ const StackComponent = () => {
                         headerStyle: { backgroundColor: COLORS.primary },
                         headerShadowVisible: false,
                         headerTitle: "",
+                        headerTintColor: "#fff",
                         headerLeft: () => <></>,
                         headerRight: () => (
-                            <ScreenHeaderBtn iconUrl={icons.close} dimension="60%" screen="Home" />
+                            <ScreenHeaderBtn iconUrl={icons.close} dimension="60%" />
                         ),
+                        
                     }}
                 />
 
@@ -76,9 +78,10 @@ const StackComponent = () => {
                         headerStyle: { backgroundColor: COLORS.primary },
                         headerShadowVisible: false,
                         headerTitle: "",
+                        headerTintColor: "#fff",
                         headerLeft: () => <></>,
                         headerRight: () => (
-                            <ScreenHeaderBtn iconUrl={icons.close} dimension="60%" screen="Home" />
+                            <ScreenHeaderBtn iconUrl={icons.close} dimension="60%" />
                         ),
                     }}
                 />

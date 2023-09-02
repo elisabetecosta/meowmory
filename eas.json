@@ -1,15 +1,16 @@
 {
   "cli": {
-    "version": ">= 5.0.2"
+    "version": ">= 5.1.0"
   },
   "build": {
     "development": {
       "developmentClient": true,
-      "distribution": "internal"
+      "distribution": "internal",
+      "channel": "development"
     },
     "preview": {
-      "distribution": "internal",
       "channel": "preview",
+      "distribution": "internal",
       "android": {
         "buildType": "apk"
       }
@@ -17,10 +18,12 @@
     "preview2": {
       "android": {
         "gradleCommand": ":app:assembleRelease"
-      }
+      },
+      "channel": "preview2"
     },
     "preview3": {
-      "developmentClient": true
+      "developmentClient": true,
+      "channel": "preview3"
     },
     "production": {
       "channel": "production"
