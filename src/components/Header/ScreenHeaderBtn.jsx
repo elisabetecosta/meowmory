@@ -10,8 +10,7 @@ const ScreenHeaderBtn = React.memo(({ iconUrl, dimension, screen }) => {
 
     return (
         <TouchableOpacity style={styles.btnContainer} onPress={() => screen ? navigation.navigate(screen) : navigation.goBack()}>
-            <Image source={iconUrl} resizeMode="cover" style={styles.btnImg(dimension)}
-            />
+            <Image source={iconUrl} resizeMode="cover" style={styles.btnImg(dimension)} />
         </TouchableOpacity>
     )
 })

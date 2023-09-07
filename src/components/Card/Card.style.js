@@ -20,8 +20,6 @@ const styles = StyleSheet.create({
     height: 117,
     width: 83,
     borderRadius: 10,
-    // borderWidth: 10,
-    borderColor: COLORS.primary,
     elevation: 3
   },
 

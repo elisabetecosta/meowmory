@@ -1,22 +1,25 @@
 // TODO 
-// - music is only stopping if the game ends, not when I navigate to a different screen, temporary solution was to stop the user from being able to navigate way from the game screen
-// - implement settings button with options to pause the game, mute the sound, go to the home screen, restart game (same level) or exit the app
+// - implement a startGame function that can be called inside the first useEffect or inside the modal, need to figure out way to pass the level to this function
+// - implement mute, probably by creating a function that sets the volume to 0 inside the AudioController, style the Mute button to be a toggle
+// - implement the exit game function, need to do some research
+// - add missing comments and delete old code and console logs
 // - phone wallpaper dimensions: 1080 width/1920 height 
 
-
 import React, { useState, useEffect } from 'react';
-
+import { View, Text, Modal, TouchableOpacity, Image } from "react-native"
 import { useNavigation } from '@react-navigation/native'
 import { useSharedValue } from "react-native-reanimated";
 
 import usePreventBackNavigation from "../../hooks/usePreventBackNavigation"
-import { handleCardComparison, handleVictory, handleGameOver } from "../../utils/GameLogic"
+import { useCountdown, handleCardComparison, handleVictory, handleGameOver } from "../../utils/GameLogic"
 import AudioController from '../../utils/AudioController'
-import cardImages from "../../constants/images"
 
-import { View, Text } from "react-native"
+import cardImages from "../../constants/images"
+import icons from "../../constants/icons"
 
 import Card from "../../components/Card/Card"
+import Button from "../../components/Button/Button"
+
 import styles from "./GameScreen.style"
 
 
@@ -48,6 +51,15 @@ const GameScreen = ({ route }) => {
     // Prevent back navigation while in the game
     usePreventBackNavigation()
 
+    //
+    const [
+        counter,
+        startCounter,
+        stopCounter,
+        pauseCounter,
+        resumeCounter
+    ] = useCountdown({ level: level, callback: (currentCounter) => console.log('current counter:', currentCounter) });
+
 
     // Use game logic to control the animation of individual cards
 
@@ -62,14 +74,15 @@ const GameScreen = ({ route }) => {
 
 
     // State variables to track game progress and state
-    const [timeRemaining, setTimeRemaining] = useState(60)
-    const [totalFlips, setTotalFlips] = useState(0)
     const [cards, setCards] = useState([])
     const [firstCard, setFirstCard] = useState(null)
     const [secondCard, setSecondCard] = useState(null)
     const [matchedCards, setMatchedCards] = useState([])
     const [disabled, setDisabled] = useState(false)
+    const [totalFlips, setTotalFlips] = useState(0)
     const [gameEnd, setGameEnd] = useState(false)
+    const [modalVisible, setModalVisible] = useState(false)
+
 
 
     // START GAME
@@ -81,51 +94,26 @@ const GameScreen = ({ route }) => {
             // Start playing background music
             audioController.playBgMusic();
 
-            // Set timer based on the selected level, shuffle cards and reset turn
-            setTimer(level);
+            // Shuffle cards, reset turn and start countdown
+            setGameEnd(false)
             shuffleCards();
             resetTurn();
-        })
+            startCounter();
 
-        // Add an event listener to stop background music when the screen loses focus
-        const onBlur = navigation.addListener('blur', () => audioController.stopBgMusic())
+            // Add an event listener to stop background music when the screen loses focus
+            const onBlur = navigation.addListener('blur', () => audioController.stopBgMusic())
 
-        return () => {
+            return () => {
 
-            // Clean up the event listeners
-            onFocus()
-            onBlur()
-        }
-    }, []);
+                // Clean up the event listeners
+                onFocus()
+                onBlur()
 
-
-    // TIMER
-    useEffect(() => {
-
-        const countdownInterval = setInterval(() => {
-
-            // Check if the game is not ended
-            if (!gameEnd) {
-
-                if (timeRemaining > 0) {
-
-                    // Decrease timeRemaining
-                    setTimeRemaining(prevState => prevState - 1)
-                } else {
-
-                    // Clear the countdown interval and trigger the handleGameOver function
-                    console.log('Countdown reached 0');
-                    clearInterval(countdownInterval);
-
-                    handleGameOver(navigation)
-                }
+                // Stop the countdown
+                stopCounter();
             }
-        }, 500)
-
-        // Clean up
-        return () => clearInterval(countdownInterval)
-
-    }, [gameEnd, timeRemaining]);
+        })
+    }, [navigation]);
 
 
     // CARD COMPARISON
@@ -140,43 +128,28 @@ const GameScreen = ({ route }) => {
     // GAME OVER
     useEffect(() => {
 
-        // Check for hard level and flips exceeding 16 using the handleGameOver function
-        if (level === 'hard' && totalFlips > 16) {
+        // Check for game over condition and navigate to game over screen
+        handleGameOver(counter, level, totalFlips, gameEnd, stopCounter, navigation);
 
-            handleGameOver(navigation);
-        }
-
-    }, [totalFlips]);
+    }, [counter, totalFlips, gameEnd]);
 
 
     // VICTORY
     useEffect(() => {
 
         // Check for victory condition and navigate to victory screen
-        handleVictory(matchedCards, cardImagesArray.length, setGameEnd, navigation);
+        handleVictory(matchedCards, cardImagesArray.length, setGameEnd, stopCounter, navigation);
 
     }, [matchedCards]);
 
 
+    
     // Reset the turn after a pair of cards is compared
     const resetTurn = () => {
         setFirstCard(null)
         setSecondCard(null)
         setDisabled(false)
     }
-
-
-    // Update the timeRemaining state based on the selected level
-    const setTimer = (level) => {
-
-        let timeRemaining = 0;
-
-        if (level === 'easy') timeRemaining = 60;
-        if (level === 'medium') timeRemaining = 45;
-        if (level === 'hard') timeRemaining = 30;
-
-        setTimeRemaining(timeRemaining)
-    };
 
 
     // Shuffle the cards for a new game
@@ -212,23 +185,93 @@ const GameScreen = ({ route }) => {
     };
 
 
+    // Toggle modal visibility
+    const toggleModal = () => {
+
+        setModalVisible(!modalVisible);
+
+        // Pause or resume countdown based on modal visibility
+        if (!modalVisible) {
+
+            // audioController.pauseBgMusic();
+            pauseCounter();
+        } else {
+
+            // audioController.playBgMusic();
+            resumeCounter();
+        }
+    };
+
+
+    // ===================
+    // MODAL FUNCTIONS
+
+    const muteGame = () => console.log("muted background music, sound effects")
+
+    const restartGame = () => {
+        // Add logic here to reset the game state and start a new game with the same level
+        console.log("restarting game")
+
+    };
+
+    const goHome = () => navigation.navigate("Home");
+
+    const exitGame = () => {
+        // Add logic here to exit the app
+        console.log("exiting game")
+    };
+
+    // ===================
+
+
     return (
-        // <GameUI
-        //     cards={cards}
-        //     timeRemaining={timeRemaining}
-        //     totalFlips={totalFlips}
-        //     disabled={disabled}
-        //     onCardPress={handleCardPress}
-        // />
         <View style={styles.container}>
 
-            {/* Render game info */}
+            {/* OPEN MODAL */}
+            <View style={styles.gearIconWrapper}>
+                <TouchableOpacity onPress={toggleModal} style={styles.iconContainer}>
+                    <Image source={icons.gearIcon} resizeMode="cover" style={styles.icon("80%")} />
+                </TouchableOpacity>
+            </View>
+
+
+            {/* MODAL */}
+            <Modal
+                transparent={true}
+                animationType="fade"
+                visible={modalVisible}
+                onRequestClose={toggleModal}
+            >
+                <View style={styles.modal}>
+
+                    <View style={styles.modalWrapper}>
+
+                        <View style={styles.closeButtonWrapper}>
+                            <TouchableOpacity onPress={toggleModal} style={styles.iconContainer}>
+                                <Image source={icons.close} resizeMode="cover" style={styles.icon("60%")} />
+                            </TouchableOpacity>
+                        </View>
+
+                        {/* Modal content */}
+                        <View style={styles.modalContent}>
+                            <Button theme="default" text="Mute" handlePress={muteGame} />
+                            <Button theme="default" text="Restart" handlePress={restartGame} />
+                            <Button theme="default" text="Home" handlePress={goHome} />
+                            <Button theme="default" text="Exit" handlePress={exitGame} />
+                        </View>
+                    </View>
+                </View>
+            </Modal>
+
+
+            {/* GAME INFO */}
             <View style={styles.gameInfoContainer}>
-                <Text style={styles.gameInfoText}>Time: {timeRemaining}</Text>
+                <Text style={styles.gameInfoText}>Time: {counter}</Text>
                 <Text style={styles.gameInfoText}>Flips: {totalFlips}</Text>
             </View>
 
-            {/* Render game board with all the cards */}
+
+            {/* CARDS */}
             <View style={styles.cardsContainer}>
                 {cards.map(card => (
 
@@ -242,6 +285,7 @@ const GameScreen = ({ route }) => {
             </View>
         </View>
     )
-};
+}
+
 
 export default GameScreen

@@ -91,14 +91,8 @@ const StackComponent = () => {
                     name="Game"
                     component={GameScreen}
                     options={({ route }) => ({
-                        headerStyle: { backgroundColor: COLORS.primary },
-                        headerShadowVisible: false,
-                        headerTitle: "",
+                        headerShown: false,
                         params: { level: route.params?.level },
-                        headerLeft: () => <></>,
-                        // headerRight: () => (
-                        //     <ScreenHeaderBtn iconUrl={icons.settings} dimension="60%" screen="Home" />
-                        // ),
                     })}
                 />
 

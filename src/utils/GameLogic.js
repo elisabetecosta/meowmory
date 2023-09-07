@@ -1,3 +1,98 @@
+import { useState, useCallback, useRef, useEffect } from "react";
+
+// Custom hook for Countdown
+const useCountdown = ({ level, callback }) => {
+
+    const DEFAULT_TIME_IN_SECONDS = 60;
+
+    const getInitialCounter = (level) => {
+        switch (level) {
+            case 'easy':
+                return 60;
+            case 'medium':
+                return 45;
+            case 'hard':
+                return 30;
+            default:
+                return DEFAULT_TIME_IN_SECONDS;
+        }
+    };
+
+
+    const _initialCounter = getInitialCounter(level),
+        [resume, setResume] = useState(0),
+        [counter, setCounter] = useState(_initialCounter),
+        initial = useRef(_initialCounter),
+        intervalRef = useRef(null),
+        [isPause, setIsPause] = useState(false)
+
+
+    const stopCounter = useCallback(() => {
+        clearInterval(intervalRef.current);
+        setCounter(0);
+        setIsPause(false);
+    }, []);
+
+
+    const startCounter = useCallback(
+        (seconds = initial.current - 1) => {
+            intervalRef.current = setInterval(() => {
+                const newCounter = seconds--;
+
+                if (isPause) return
+
+                if (newCounter >= 0) {
+                    setCounter(newCounter);
+                    callback && callback(newCounter);
+                } else {
+                    stopCounter();
+                }
+            }, 1000);
+        },
+        [stopCounter]
+    );
+
+    const pauseCounter = () => {
+        setResume(counter);
+        setIsPause(true);
+        clearInterval(intervalRef.current);
+    };
+
+    const resumeCounter = () => {
+        console.log('Resuming counter with:', resume)
+        startCounter(resume - 1);
+        setResume(0);
+        setIsPause(false);
+    };
+
+    // const resetCounter = useCallback(() => {
+    //     if (intervalRef.current) {
+    //         stopCounter();
+    //     }
+    //     setCounter(initial.current);
+    //     startCounter(initial.current - 1);
+    // }, [startCounter, stopCounter]);
+
+    // useEffect(() => {
+    //     resetCounter();
+    // }, []);
+
+    useEffect(() => {
+        return () => {
+            stopCounter();
+        };
+    }, [stopCounter]);
+
+    return [
+        counter,
+        startCounter,
+        stopCounter,
+        pauseCounter,
+        resumeCounter,
+    ];
+};
+
+
 // Handle card comparison logic
 const handleCardComparison = (firstCard, secondCard, setDisabled, audioController, setMatchedCards, resetTurn) => {
 
@@ -26,15 +121,16 @@ const handleCardComparison = (firstCard, secondCard, setDisabled, audioControlle
 
 
 // Handle victory condition
-const handleVictory = (matchedCards, totalCardCount, setGameEnd, navigation) => {
+const handleVictory = (matchedCards, totalCardCount, setGameEnd, stopCounter, navigation) => {
 
     // Check if all cards are matched
     if (matchedCards.length === totalCardCount) {
 
-        // Set gameEnd state to true to stop the timer
+        // Stop game over from being triggered after a victory
         setGameEnd(true)
 
-        console.log("Victory");
+        // Stop countdown
+        stopCounter()
 
         // Navigate to the victory screen
         navigation.navigate("Victory")
@@ -43,13 +139,22 @@ const handleVictory = (matchedCards, totalCardCount, setGameEnd, navigation) => 
 
 
 // Handle game over
-const handleGameOver = (navigation) => {
+const handleGameOver = (counter, level, totalFlips, gameEnd, stopCounter, navigation) => {
 
-    console.log("Game Over");
+    // If the game has not ended
+    if (!gameEnd) {
 
-    // Navigate to the gameover screen
-    navigation.navigate("GameOver");
+        // Check for counter reaching 0 or hard level with flips exceeding 16 
+        if (counter === 0 || level === 'hard' && totalFlips > 16) {
+
+            // Stop countdown
+            stopCounter()
+
+            // Navigate to the gameover screen
+            navigation.navigate("GameOver");
+        }
+    }
 };
 
 
-export { handleCardComparison, handleVictory, handleGameOver }
+export { useCountdown, handleCardComparison, handleVictory, handleGameOver }
