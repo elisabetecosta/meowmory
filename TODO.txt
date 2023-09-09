@@ -1,2 +1,3 @@
-- instead of buttons, on the level screen add cat images, easy - cat sleeping, medium - cat playing, hard - cat lifting weights or studying
-- add settings icon to game screen which triggers a modal that automatically paused the music and timer, this modal should have options like muting music and sound effects, restart the game passing the same level, going home, exiting the app
+- add missing comments and delete old code and console logs
+- improve styling of the buttons in the level screen
+- phone wallpaper dimensions: 1080 width/1920 height 

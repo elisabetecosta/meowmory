@@ -1,12 +1,5 @@
-// TODO 
-// - implement a startGame function that can be called inside the first useEffect or inside the modal, need to figure out way to pass the level to this function
-// - implement mute, probably by creating a function that sets the volume to 0 inside the AudioController, style the Mute button to be a toggle
-// - implement the exit game function, need to do some research
-// - add missing comments and delete old code and console logs
-// - phone wallpaper dimensions: 1080 width/1920 height 
-
 import React, { useState, useEffect } from 'react';
-import { View, Text, Modal, TouchableOpacity, Image } from "react-native"
+import { View, Text, Modal, TouchableOpacity, Image, Switch, BackHandler } from "react-native"
 import { useNavigation } from '@react-navigation/native'
 import { useSharedValue } from "react-native-reanimated";
 
@@ -19,6 +12,8 @@ import icons from "../../constants/icons"
 
 import Card from "../../components/Card/Card"
 import Button from "../../components/Button/Button"
+
+import { COLORS, FONT, SIZES } from "../../constants"
 
 import styles from "./GameScreen.style"
 
@@ -82,6 +77,7 @@ const GameScreen = ({ route }) => {
     const [totalFlips, setTotalFlips] = useState(0)
     const [gameEnd, setGameEnd] = useState(false)
     const [modalVisible, setModalVisible] = useState(false)
+    const [muted, setMuted] = useState(false)
 
 
 
@@ -143,7 +139,7 @@ const GameScreen = ({ route }) => {
     }, [matchedCards]);
 
 
-    
+
     // Reset the turn after a pair of cards is compared
     const resetTurn = () => {
         setFirstCard(null)
@@ -191,37 +187,37 @@ const GameScreen = ({ route }) => {
         setModalVisible(!modalVisible);
 
         // Pause or resume countdown based on modal visibility
-        if (!modalVisible) {
-
-            // audioController.pauseBgMusic();
-            pauseCounter();
-        } else {
-
-            // audioController.playBgMusic();
-            resumeCounter();
-        }
+        if (!modalVisible) pauseCounter()
+        else resumeCounter()
     };
 
+
+    
 
     // ===================
     // MODAL FUNCTIONS
 
-    const muteGame = () => console.log("muted background music, sound effects")
+    const toggleMute = () => setMuted(!muted)
 
-    const restartGame = () => {
-        // Add logic here to reset the game state and start a new game with the same level
-        console.log("restarting game")
+    useEffect(() => {
 
-    };
+        if (!muted) {
+            audioController.playBgMusic()
+        }
 
-    const goHome = () => navigation.navigate("Home");
+        return (() => audioController.stopBgMusic())
 
-    const exitGame = () => {
-        // Add logic here to exit the app
-        console.log("exiting game")
-    };
+    }, [muted])
+
+
+    const startNewGame = () => navigation.navigate("Levels");
+
+    const navigateHome = () => navigation.navigate("Home");
+
+    const exitGame = () => BackHandler.exitApp()
 
     // ===================
+
 
 
     return (
@@ -254,9 +250,20 @@ const GameScreen = ({ route }) => {
 
                         {/* Modal content */}
                         <View style={styles.modalContent}>
-                            <Button theme="default" text="Mute" handlePress={muteGame} />
-                            <Button theme="default" text="Restart" handlePress={restartGame} />
-                            <Button theme="default" text="Home" handlePress={goHome} />
+
+                            <View style={styles.switchContainer}>
+                                <Text style={styles.switchText}>Music: {!muted ? 'ON' : 'OFF'}</Text>
+                                <Switch
+                                    value={!muted}
+                                    onValueChange={toggleMute}
+                                    trackColor={{ true: COLORS.light, false: 'gray' }}
+                                    thumbColor={!muted ? COLORS.primary : 'gray'}
+                                    style={styles.switch}
+                                />
+                            </View>
+
+                            <Button theme="default" text="New Game" handlePress={startNewGame} />
+                            <Button theme="default" text="Home" handlePress={navigateHome} />
                             <Button theme="default" text="Exit" handlePress={exitGame} />
                         </View>
                     </View>

@@ -3,11 +3,13 @@ import { StyleSheet } from "react-native"
 import { COLORS, FONT, SIZES } from "../../constants"
 
 const styles = StyleSheet.create({
+
   container: {
     flex: 1,
     backgroundColor: COLORS.secondary,
   },
 
+  // MODAL STYLES
   gearIconWrapper: {
     backgroundColor: COLORS.primary,
     alignItems: "flex-end",
@@ -21,7 +23,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  
+
   icon: (dimension) => ({
     width: dimension,
     height: dimension,
@@ -52,6 +54,25 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 
+  switchContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 30,
+  },
+
+  switchText: {
+    fontFamily: FONT.bold,
+    color: COLORS.light,
+    fontSize: SIZES.large,
+    marginRight: 50,
+  },
+
+  switch: {
+    transform: [{ scaleX: 1.5 }, { scaleY: 1.5 }],
+  },
+
+
+  // GAME STYLES
   gameInfoContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
