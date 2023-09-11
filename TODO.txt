@@ -1,3 +1,2 @@
-- add missing comments and delete old code and console logs
 - improve styling of the buttons in the level screen
 - phone wallpaper dimensions: 1080 width/1920 height 

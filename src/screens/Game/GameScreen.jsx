@@ -13,7 +13,7 @@ import icons from "../../constants/icons"
 import Card from "../../components/Card/Card"
 import Button from "../../components/Button/Button"
 
-import { COLORS, FONT, SIZES } from "../../constants"
+import { COLORS } from "../../constants"
 
 import styles from "./GameScreen.style"
 
@@ -46,14 +46,14 @@ const GameScreen = ({ route }) => {
     // Prevent back navigation while in the game
     usePreventBackNavigation()
 
-    //
+    // Destructuring assignment to capture values returned by the useCountdown hook
     const [
         counter,
         startCounter,
         stopCounter,
         pauseCounter,
         resumeCounter
-    ] = useCountdown({ level: level, callback: (currentCounter) => console.log('current counter:', currentCounter) });
+    ] = useCountdown({ level: level, callback: (currentCounter) => console.log('current counter:', currentCounter) })
 
 
     // Use game logic to control the animation of individual cards
@@ -90,7 +90,7 @@ const GameScreen = ({ route }) => {
             // Start playing background music
             audioController.playBgMusic();
 
-            // Shuffle cards, reset turn and start countdown
+            // Set gameEnd to false, shuffle cards, reset turn and start countdown
             setGameEnd(false)
             shuffleCards();
             resetTurn();
@@ -109,7 +109,7 @@ const GameScreen = ({ route }) => {
                 stopCounter();
             }
         })
-    }, [navigation]);
+    }, []);
 
 
     // CARD COMPARISON
@@ -184,6 +184,7 @@ const GameScreen = ({ route }) => {
     // Toggle modal visibility
     const toggleModal = () => {
 
+        // Toggle the modal visibility
         setModalVisible(!modalVisible);
 
         // Pause or resume countdown based on modal visibility
@@ -192,31 +193,33 @@ const GameScreen = ({ route }) => {
     };
 
 
-    
-
-    // ===================
-    // MODAL FUNCTIONS
-
+    // Toggle the mute state
     const toggleMute = () => setMuted(!muted)
 
+    // Control audio playback based on the 'muted' state
     useEffect(() => {
 
+        // If not muted, play background music
         if (!muted) {
             audioController.playBgMusic()
         }
 
-        return (() => audioController.stopBgMusic())
-
+        // Clean up function to stop background music when component unmounts or 'muted' changes
+        return () => audioController.stopBgMusic()
+        
     }, [muted])
 
 
+    // Allow for the start of a new game by navigating to the "Levels" screen
     const startNewGame = () => navigation.navigate("Levels");
 
+
+    // Navigate back to the "Home" screen
     const navigateHome = () => navigation.navigate("Home");
 
-    const exitGame = () => BackHandler.exitApp()
 
-    // ===================
+    // Exit the game and close the app (only works on Android)
+    const exitGame = () => BackHandler.exitApp()
 
 
 

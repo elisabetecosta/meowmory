@@ -1,10 +1,11 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 
-// Custom hook for Countdown
+// Custom hook for managing countdown
 const useCountdown = ({ level, callback }) => {
 
     const DEFAULT_TIME_IN_SECONDS = 60;
 
+    // Function to get the initial counter value based on the selected level
     const getInitialCounter = (level) => {
         switch (level) {
             case 'easy':
@@ -19,32 +20,40 @@ const useCountdown = ({ level, callback }) => {
     };
 
 
-    const _initialCounter = getInitialCounter(level),
-        [resume, setResume] = useState(0),
-        [counter, setCounter] = useState(_initialCounter),
-        initial = useRef(_initialCounter),
-        intervalRef = useRef(null),
-        [isPause, setIsPause] = useState(false)
+    // Variables and state initialization
+    const _initialCounter = getInitialCounter(level)
+    const [resume, setResume] = useState(0)
+    const [counter, setCounter] = useState(_initialCounter)
+    const initial = useRef(_initialCounter)
+    const intervalRef = useRef(null)
+    const [isPaused, setIsPaused] = useState(false)
 
 
-    const stopCounter = useCallback(() => {
-        clearInterval(intervalRef.current);
-        setCounter(0);
-        setIsPause(false);
-    }, []);
-
-
+    // Start countdown
     const startCounter = useCallback(
+
+        // If 'seconds' is not provided when calling 'startCounter', use the initial countdown value minus 1 as the default value
         (seconds = initial.current - 1) => {
+
+            // Set up an interval to update the countdown timer
             intervalRef.current = setInterval(() => {
+
+                // Decrement the 'seconds' variable by 1 and assign its current value to 'newCounter'
                 const newCounter = seconds--;
 
-                if (isPause) return
+                // If paused, do nothing
+                if (isPaused) return
 
                 if (newCounter >= 0) {
+
+                    // Update the counter
                     setCounter(newCounter);
+
+                    // Call the callback function (if provided)
                     callback && callback(newCounter);
                 } else {
+
+                    // If countdown reached 0, stop the countdown
                     stopCounter();
                 }
             }, 1000);
@@ -52,37 +61,58 @@ const useCountdown = ({ level, callback }) => {
         [stopCounter]
     );
 
+
+    // Pause countdown
     const pauseCounter = () => {
+
+        // Store the current countdown value before pausing
         setResume(counter);
-        setIsPause(true);
+
+        // Set the paused state to true
+        setIsPaused(true);
+
+        // Clear the interval
         clearInterval(intervalRef.current);
     };
 
+
+    // Resume countdown
     const resumeCounter = () => {
-        console.log('Resuming counter with:', resume)
+
+        // Start the countdown with the stored resume value
         startCounter(resume - 1);
+
+        // Reset the resume value
         setResume(0);
-        setIsPause(false);
+
+        // Reset the paused state
+        setIsPaused(false);
     };
 
-    // const resetCounter = useCallback(() => {
-    //     if (intervalRef.current) {
-    //         stopCounter();
-    //     }
-    //     setCounter(initial.current);
-    //     startCounter(initial.current - 1);
-    // }, [startCounter, stopCounter]);
 
-    // useEffect(() => {
-    //     resetCounter();
-    // }, []);
+    // Stop countdown
+    const stopCounter = useCallback(() => {
 
+        // Clear the interval
+        clearInterval(intervalRef.current);
+
+        // Set the counter to 0
+        setCounter(0);
+
+        // Reset the paused state
+        setIsPaused(false);
+    }, []);
+
+
+    // Cleanup effect to stop the countdown timer when the component unmounts
     useEffect(() => {
         return () => {
             stopCounter();
         };
     }, [stopCounter]);
 
+
+    // Return an array of values and functions
     return [
         counter,
         startCounter,
